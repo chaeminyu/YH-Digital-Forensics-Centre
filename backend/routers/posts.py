@@ -25,8 +25,13 @@ async def get_posts(
     if category_id:
         query = query.filter(Post.category_id == category_id)
     elif category:
-        # Filter by category slug/name - for blog, press, training categories
-        category_obj = db.query(Category).filter(Category.name == category.title()).first()
+        # Filter by category slug/name - handle both slug and name matching
+        category_obj = db.query(Category).filter(
+            (Category.name.ilike(f"%{category}%")) |
+            (Category.slug == category.lower()) |
+            (Category.slug == category) |
+            (Category.name == category.title())
+        ).first()
         if category_obj:
             query = query.filter(Post.category_id == category_obj.id)
     

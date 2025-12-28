@@ -30,6 +30,18 @@ async def get_admin_posts(
         total_pages=math.ceil(total / limit)
     )
 
+@router.get("/posts/{post_id}", response_model=PostSchema)
+async def get_post(
+    post_id: int,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    db_post = db.query(Post).filter(Post.id == post_id).first()
+    if not db_post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    return db_post
+
 @router.post("/posts", response_model=PostSchema)
 async def create_post(
     post: PostCreate,

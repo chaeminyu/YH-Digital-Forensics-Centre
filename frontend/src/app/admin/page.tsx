@@ -30,6 +30,20 @@ interface DashboardStats {
   recentActivity: number
 }
 
+interface DashboardChanges {
+  posts: { percentage: string; type: string }
+  inquiries: { percentage: string; type: string }
+  views: { percentage: string; type: string }
+  activity: { percentage: string; type: string }
+}
+
+interface ActivityItem {
+  type: string
+  message: string
+  time: string
+  color: string
+}
+
 interface RecentPost {
   id: number
   title: string
@@ -56,8 +70,15 @@ const AdminDashboard: React.FC = () => {
     totalViews: 0,
     recentActivity: 0
   })
+  const [changes, setChanges] = useState<DashboardChanges>({
+    posts: { percentage: '0%', type: 'neutral' },
+    inquiries: { percentage: '0%', type: 'neutral' },
+    views: { percentage: '0%', type: 'neutral' },
+    activity: { percentage: '0%', type: 'neutral' }
+  })
   const [recentPosts, setRecentPosts] = useState<RecentPost[]>([])
   const [recentInquiries, setRecentInquiries] = useState<RecentInquiry[]>([])
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -68,29 +89,29 @@ const AdminDashboard: React.FC = () => {
     try {
       setLoading(true)
       
-      // Fetch posts
+      // Fetch dashboard stats and changes
+      const statsResponse = await authUtils.fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/dashboard/stats`)
+      const statsData = await statsResponse.json()
+      
+      // Fetch recent activity
+      const activityResponse = await authUtils.fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/dashboard/recent-activity`)
+      const activityData = await activityResponse.json()
+      
+      // Fetch posts and inquiries for recent sections
       const postsResponse = await authUtils.fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/posts`)
       const postsData = await postsResponse.json()
       
-      // Fetch inquiries
       const inquiriesResponse = await authUtils.fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/inquiries`)
       const inquiriesData = await inquiriesResponse.json()
       
-      // Calculate stats
-      const postsArray = Array.isArray(postsData) ? postsData : (postsData?.posts || [])
-      const inquiriesArray = Array.isArray(inquiriesData) ? inquiriesData : (inquiriesData?.inquiries || [])
-      const totalViews = postsArray.reduce((sum: number, post: any) => sum + (post.view_count || 0), 0)
-      
-      setStats({
-        totalPosts: postsArray.length,
-        totalInquiries: inquiriesArray.length,
-        totalViews,
-        recentActivity: postsArray.filter((post: any) => 
-          new Date(post.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        ).length
-      })
+      // Set stats and changes from API
+      setStats(statsData.stats)
+      setChanges(statsData.changes)
+      setRecentActivity(activityData.activities || [])
       
       // Set recent data
+      const postsArray = Array.isArray(postsData) ? postsData : (postsData?.posts || [])
+      const inquiriesArray = Array.isArray(inquiriesData) ? inquiriesData : (inquiriesData?.inquiries || [])
       setRecentPosts(postsArray.slice(0, 5))
       setRecentInquiries(inquiriesArray.slice(0, 5))
       
@@ -104,43 +125,43 @@ const AdminDashboard: React.FC = () => {
   const statCards = [
     {
       title: 'Total Posts',
-      value: stats.totalPosts,
+      value: stats?.totalPosts || 0,
       icon: FileText,
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/10',
       borderColor: 'border-blue-500/20',
-      change: '+12%',
-      changeType: 'positive' as const
+      change: changes?.posts?.percentage || '0%',
+      changeType: (changes?.posts?.type || 'neutral') as 'positive' | 'negative' | 'neutral'
     },
     {
       title: 'New Inquiries',
-      value: stats.totalInquiries,
+      value: stats?.totalInquiries || 0,
       icon: Mail,
       color: 'text-green-400',
       bgColor: 'bg-green-500/10',
       borderColor: 'border-green-500/20',
-      change: '+8%',
-      changeType: 'positive' as const
+      change: changes?.inquiries?.percentage || '0%',
+      changeType: (changes?.inquiries?.type || 'neutral') as 'positive' | 'negative' | 'neutral'
     },
     {
       title: 'Total Views',
-      value: stats.totalViews,
+      value: stats?.totalViews || 0,
       icon: Eye,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/10',
       borderColor: 'border-purple-500/20',
-      change: '+24%',
-      changeType: 'positive' as const
+      change: changes?.views?.percentage || '0%',
+      changeType: (changes?.views?.type || 'neutral') as 'positive' | 'negative' | 'neutral'
     },
     {
       title: 'Active This Week',
-      value: stats.recentActivity,
+      value: stats?.recentActivity || 0,
       icon: Activity,
       color: 'text-accent-400',
       bgColor: 'bg-accent-500/10',
       borderColor: 'border-accent-500/20',
-      change: '+5%',
-      changeType: 'positive' as const
+      change: changes?.activity?.percentage || '0%',
+      changeType: (changes?.activity?.type || 'neutral') as 'positive' | 'negative' | 'neutral'
     }
   ]
 
@@ -220,8 +241,16 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center mt-4">
-                  <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
-                  <span className="text-green-400 text-sm font-medium">{stat.change}</span>
+                  <TrendingUp className={`w-4 h-4 mr-1 ${
+                    stat.changeType === 'positive' ? 'text-green-400' : 
+                    stat.changeType === 'negative' ? 'text-red-400' : 
+                    'text-slate-400'
+                  }`} />
+                  <span className={`text-sm font-medium ${
+                    stat.changeType === 'positive' ? 'text-green-400' : 
+                    stat.changeType === 'negative' ? 'text-red-400' : 
+                    'text-slate-400'
+                  }`}>{stat.change}</span>
                   <span className="text-slate-400 text-sm ml-1">vs last month</span>
                 </div>
               </Card>
@@ -366,7 +395,7 @@ const AdminDashboard: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Activity Feed (Placeholder) */}
+        {/* Activity Feed */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -375,21 +404,25 @@ const AdminDashboard: React.FC = () => {
           <Card className="p-6">
             <h2 className="text-xl font-bold text-slate-100 mb-4">Recent Activity</h2>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-sm">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span className="text-slate-300">New inquiry from Samsung Electronics</span>
-                <span className="text-slate-500">2 minutes ago</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <span className="text-slate-300">Published new blog post about iOS forensics</span>
-                <span className="text-slate-500">1 hour ago</span>
-              </div>
-              <div className="flex items-center space-x-3 text-sm">
-                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                <span className="text-slate-300">Updated mobile forensics service page</span>
-                <span className="text-slate-500">3 hours ago</span>
-              </div>
+              {recentActivity.length === 0 ? (
+                <div className="text-center py-8">
+                  <Activity className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+                  <p className="text-slate-400">No recent activity</p>
+                </div>
+              ) : (
+                recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-center space-x-3 text-sm">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.color === 'green' ? 'bg-green-400' :
+                      activity.color === 'blue' ? 'bg-blue-400' :
+                      activity.color === 'purple' ? 'bg-purple-400' :
+                      'bg-slate-400'
+                    }`}></div>
+                    <span className="text-slate-300 flex-1">{activity.message}</span>
+                    <span className="text-slate-500">{activity.time}</span>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </motion.div>

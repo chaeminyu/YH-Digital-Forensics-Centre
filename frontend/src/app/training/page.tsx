@@ -25,6 +25,7 @@ import {
   Badge
 } from '@/components/ui'
 import { Breadcrumb } from '@/components/layout'
+import { getPostUrl } from '@/utils/postUrls'
 
 
 interface TrainingPost {
@@ -261,7 +262,7 @@ const TrainingPage: React.FC = () => {
                       </p>
                       
                       <Button 
-                        href={`/digital-forensic/${post.slug}`}
+                        href={getPostUrl(post)}
                         variant="ghost" 
                         size="sm"
                         className="mt-4"

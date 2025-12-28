@@ -11,6 +11,7 @@ import {
   Tag
 } from 'lucide-react'
 import Link from 'next/link'
+import { getPostUrl } from '@/utils/postUrls'
 import { 
   Section, 
   SectionHeading, 
@@ -152,7 +153,7 @@ const GeneralForensicsPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Link href={`/posts/${post.slug}`} className="block">
+                  <Link href={getPostUrl(post)} className="block">
                     <Card className="group overflow-hidden hover:border-accent-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent-500/10 cursor-pointer h-full">
                       {post.thumbnail_url && (
                         <div className="relative h-48 overflow-hidden">

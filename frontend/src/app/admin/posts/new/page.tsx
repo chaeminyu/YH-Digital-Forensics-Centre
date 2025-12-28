@@ -19,6 +19,7 @@ import { Card, Badge, Button, Input, Textarea, Select } from '@/components/ui'
 import AdminLayout from '@/components/admin/AdminLayout'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import { authUtils } from '@/utils/auth'
+import { generatePostUrl } from '@/utils/postUrls'
 
 interface PostForm {
   title: string
@@ -278,7 +279,7 @@ const NewPostPage: React.FC = () => {
                 required
               />
               <p className="text-xs text-slate-500 mt-1">
-                Auto-generated from title. Used in URL: /{formData.category || 'category'}{formData.subcategory ? `/${formData.subcategory}` : ''}/{formData.slug || 'your-slug-here'}
+                Auto-generated from title. Used in URL: {generatePostUrl(formData.category, formData.subcategory, formData.slug)}
               </p>
             </Card>
 
