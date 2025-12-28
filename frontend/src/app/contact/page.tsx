@@ -113,7 +113,7 @@ const ContactPage: React.FC = () => {
     {
       icon: Phone,
       title: 'Phone Number',
-      details: ['+82 010-8402-2752'],
+      details: ['+82 (0)10-8402-2752'],
       color: 'text-green-400'
     },
     {
@@ -495,7 +495,7 @@ const ContactPage: React.FC = () => {
                   size="lg"
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  Emergency Hotline: +82 010-8402-2752
+                  Emergency Hotline: +82 (0)10-8402-2752
                 </Button>
                 <Button 
                   href="mailto:yh@yhforensic.com" 
