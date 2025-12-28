@@ -188,11 +188,24 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block ml-8">
+          {/* CTA Button & Language Toggle */}
+          <div className="hidden lg:flex items-center space-x-4 ml-8">
             <Button href="/contact" size="sm">
               Request Consultation
             </Button>
+            
+            {/* Language Toggle */}
+            <div className="flex items-center bg-slate-800/50 rounded-lg border border-slate-600/50 overflow-hidden">
+              <button className="w-10 h-8 text-sm font-medium bg-accent-400 text-slate-900 transition-colors flex items-center justify-center">
+                EN
+              </button>
+              <button 
+                onClick={() => window.open('https://blog.naver.com/yhdfc', '_blank')}
+                className="w-10 h-8 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors flex items-center justify-center"
+              >
+                KR
+              </button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -245,8 +258,25 @@ const Header: React.FC = () => {
                   </div>
                 ))}
                 
-                {/* Mobile CTA */}
+                {/* Mobile Language Toggle */}
                 <div className="pt-4 px-4">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="flex items-center bg-slate-800/50 rounded-lg border border-slate-600/50 overflow-hidden">
+                      <button className="px-6 py-2 text-sm font-medium bg-accent-400 text-slate-900 transition-colors min-w-[50px] text-center">
+                        EN
+                      </button>
+                      <button 
+                        onClick={() => window.open('https://blog.naver.com/yhdfc', '_blank')}
+                        className="px-6 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors min-w-[50px] text-center"
+                      >
+                        KR
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Mobile CTA */}
+                <div className="px-4">
                   <Button href="/contact" className="w-full justify-center">
                     Request Consultation
                   </Button>
