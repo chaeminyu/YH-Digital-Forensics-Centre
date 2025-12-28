@@ -1,7 +1,6 @@
 'use client'
 
 import { forwardRef } from 'react'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 export interface SectionHeadingProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -35,16 +34,12 @@ const SectionHeading = forwardRef<HTMLDivElement, SectionHeadingProps>(
       3: 'text-xl md:text-2xl font-semibold'
     }
 
-    const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
+    const HeadingTag = `h${level}` as keyof React.JSX.IntrinsicElements
 
     return (
-      <motion.div
+      <div
         ref={ref}
         className={cn('space-y-4 mb-12', alignments[align], className)}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
         {...props}
       >
         {subtitle && (
@@ -82,7 +77,7 @@ const SectionHeading = forwardRef<HTMLDivElement, SectionHeadingProps>(
             {description}
           </p>
         )}
-      </motion.div>
+      </div>
     )
   }
 )

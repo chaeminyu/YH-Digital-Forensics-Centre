@@ -439,7 +439,7 @@ const AdminInquiriesPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     size="sm"
-                    variant={selectedInquiry.status === 'responded' ? 'outline' : 'default'}
+                    variant={selectedInquiry.status === 'responded' ? 'outline' : 'primary'}
                     onClick={() => handleUpdateStatus(selectedInquiry.id, 'responded')}
                     disabled={selectedInquiry.status === 'responded'}
                   >

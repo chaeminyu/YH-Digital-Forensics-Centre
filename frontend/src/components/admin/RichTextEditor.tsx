@@ -6,7 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 // import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { Color } from '@tiptap/extension-color'
-// import { TextStyle } from '@tiptap/extension-text-style' // Temporarily disabled due to version conflicts
+import { TextStyle } from '@tiptap/extension-text-style'
 import Highlight from '@tiptap/extension-highlight'
 import {
   Bold,
@@ -61,7 +61,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         },
       }),
       Color,
-      // TextStyle, // Temporarily disabled due to version conflicts
+      TextStyle,
       Highlight.configure({
         multicolor: true,
       }),

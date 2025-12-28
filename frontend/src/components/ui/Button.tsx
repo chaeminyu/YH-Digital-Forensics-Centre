@@ -2,7 +2,6 @@
 
 import { forwardRef } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -44,28 +43,20 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     if (href) {
       return (
         <Link href={href} className={cn(baseStyles, variants[variant], sizes[size], className)}>
-          <motion.span
-            className="block"
-            whileHover={!isDisabled ? { scale: 1.02 } : undefined}
-            whileTap={!isDisabled ? { scale: 0.98 } : undefined}
-          >
-            {content}
-          </motion.span>
+          {content}
         </Link>
       )
     }
 
     return (
-      <motion.button
+      <button
         ref={ref}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         disabled={isDisabled}
-        whileHover={!isDisabled ? { scale: 1.02 } : undefined}
-        whileTap={!isDisabled ? { scale: 0.98 } : undefined}
         {...props}
       >
         {content}
-      </motion.button>
+      </button>
     )
   }
 )

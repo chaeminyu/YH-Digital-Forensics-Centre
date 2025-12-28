@@ -187,14 +187,24 @@ const AdminPostsPage: React.FC = () => {
             <Select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              options={categories}
-            />
+            >
+              {categories.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </Select>
             
             <Select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              options={statusOptions}
-            />
+            >
+              {statusOptions.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </Select>
             
             <div className="flex items-center space-x-2">
               <Badge variant="secondary" size="sm">
@@ -226,7 +236,7 @@ const AdminPostsPage: React.FC = () => {
               const CategoryIcon = getCategoryIcon(postCategoryName)
               return (
                 <motion.div
-                  key={`post-${post.id}-${post.slug}`}
+                  key={post.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}

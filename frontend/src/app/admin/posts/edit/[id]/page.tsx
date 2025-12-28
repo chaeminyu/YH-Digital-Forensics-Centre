@@ -386,8 +386,13 @@ const EditPostPage: React.FC = () => {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    options={categories}
-                  />
+                  >
+                    {categories.map((category) => (
+                      <option key={category.value} value={category.value}>
+                        {category.label}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Subcategory for Digital Forensic */}
@@ -401,8 +406,13 @@ const EditPostPage: React.FC = () => {
                       name="subcategory"
                       value={formData.subcategory || ''}
                       onChange={handleInputChange}
-                      options={subcategories['digital-forensic']}
-                    />
+                    >
+                      {subcategories['digital-forensic'].map((subcategory) => (
+                        <option key={subcategory.value} value={subcategory.value}>
+                          {subcategory.label}
+                        </option>
+                      ))}
+                    </Select>
                   </div>
                 )}
 
