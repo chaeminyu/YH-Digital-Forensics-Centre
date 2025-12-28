@@ -201,9 +201,9 @@ const Header: React.FC = () => {
               </button>
               <button 
                 onClick={() => window.open('https://blog.naver.com/yhdfc', '_blank')}
-                className="w-10 h-8 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors flex items-center justify-center"
+                className="w-12 h-8 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors flex items-center justify-center"
               >
-                KR
+                한글
               </button>
             </div>
           </div>
@@ -267,9 +267,9 @@ const Header: React.FC = () => {
                       </button>
                       <button 
                         onClick={() => window.open('https://blog.naver.com/yhdfc', '_blank')}
-                        className="px-6 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors min-w-[50px] text-center"
+                        className="px-6 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors min-w-[60px] text-center"
                       >
-                        KR
+                        한글
                       </button>
                     </div>
                   </div>
