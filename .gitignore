@@ -101,3 +101,20 @@ Desktop.ini
 # Uploaded files
 uploads/
 static/uploads/
+
+# ===== Server / Linux user files =====
+.bashrc
+.bash_profile
+.bash_logout
+.profile
+.viminfo
+.lesshst
+.python_history
+.sudo_as_admin_successful
+
+# SSH / credentials
+.ssh/
+.gitconfig
+
+# Cache
+.cache/
