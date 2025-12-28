@@ -202,7 +202,7 @@ const TrainingPostPage: React.FC<PostPageProps> = ({ params }) => {
                 <Button href="/training" variant="outline">
                   ← More Articles
                 </Button>
-                <Button href="/contact" variant="default">
+                <Button href="/contact" variant="primary">
                   Need Help? Contact Us
                 </Button>
               </div>

@@ -209,7 +209,7 @@ const GeneralForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
                 <Button href="/digital-forensic/general-forensics" variant="outline">
                   ← More Articles
                 </Button>
-                <Button href="/contact" variant="default">
+                <Button href="/contact" variant="primary">
                   Need Help? Contact Us
                 </Button>
               </div>
