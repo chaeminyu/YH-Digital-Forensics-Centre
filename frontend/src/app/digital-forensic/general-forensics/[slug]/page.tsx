@@ -22,24 +22,35 @@ import { Breadcrumb } from '@/components/layout'
 import { Post } from '@/types'
 
 interface PostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 const GeneralForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [slug, setSlug] = useState<string>('')
 
   useEffect(() => {
-    fetchPost()
-  }, [params.slug])
+    const initializeParams = async () => {
+      const resolvedParams = await params
+      setSlug(resolvedParams.slug)
+    }
+    initializeParams()
+  }, [])
+
+  useEffect(() => {
+    if (slug) {
+      fetchPost()
+    }
+  }, [slug])
 
   const fetchPost = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${params.slug}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/${slug}`)
       
       if (!response.ok) {
         throw new Error('Post not found')

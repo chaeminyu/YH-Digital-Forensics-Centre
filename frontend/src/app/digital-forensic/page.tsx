@@ -45,23 +45,19 @@ const DigitalForensicPage: React.FC = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true)
-      // Fetch digital forensic and subcategory posts
-      const categories = ['digital-forensic', 'general-forensics', 'evidence-forensics', 'digital-crime']
-      const responses = await Promise.all(
-        categories.map(category => 
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts?category=${category}`)
-        )
-      )
+      // Fetch all posts without category filter for overview page
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts?limit=50`)
       
-      const allPosts: Post[] = []
-      for (const response of responses) {
-        if (response.ok) {
-          const data = await response.json()
-          allPosts.push(...data.posts)
-        }
+      if (response.ok) {
+        const data = await response.json()
+        // Filter for digital forensic related posts only
+        const digitalForensicPosts = data.posts.filter((post: Post) => 
+          post.is_published && 
+          post.category && 
+          ['general-forensics', 'evidence-forensics', 'digital-crime', 'digital-forensic'].includes(post.category.slug)
+        )
+        setPosts(digitalForensicPosts)
       }
-
-      setPosts(allPosts.filter(post => post.is_published))
     } catch (error) {
       console.error('Failed to fetch posts:', error)
     } finally {

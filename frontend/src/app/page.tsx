@@ -117,47 +117,26 @@ const HomePage: React.FC = () => {
     try {
       setLoadingPosts(true)
       
-      // Fetch posts from all three categories
-      const categories = ['digital-forensic', 'general-forensics', 'evidence-forensics', 'digital-crime', 'press', 'training']
+      // Fetch all posts with a single API call
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts?limit=50`)
       
-      const responses = await Promise.all(
-        categories.map(async (category) => {
-          try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/posts?category=${category}`)
-            if (response.ok) {
-              const data = await response.json()
-              return data.posts || []
-            }
-            return []
-          } catch (error) {
-            console.error(`Failed to fetch ${category} posts:`, error)
-            return []
-          }
-        })
-      )
-      
-      // Combine all posts and filter published only
-      const allPosts = responses.flat().filter((post: Post) => post.is_published)
-      
-      // Deduplicate using a more robust approach
-      const seenIds = new Set()
-      const seenSlugs = new Set()
-      const uniquePosts = allPosts.filter((post) => {
-        const uniqueKey = `${post.id}-${post.slug}`
-        if (seenIds.has(post.id) || seenSlugs.has(post.slug)) {
-          return false
-        }
-        seenIds.add(post.id)
-        seenSlugs.add(post.slug)
-        return true
-      })
-      
-      // Sort by date (newest first) and take latest 6 posts
-      const sortedPosts = uniquePosts
-        .sort((a: Post, b: Post) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 6)
-      
-      setLatestPosts(sortedPosts)
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Filter for published posts with valid categories
+        const filteredPosts = data.posts.filter((post: Post) => 
+          post.is_published && 
+          post.category && 
+          ['general-forensics', 'evidence-forensics', 'digital-crime', 'press', 'training'].includes(post.category.slug)
+        )
+        
+        // Sort by date (newest first) and take latest 6 posts
+        const sortedPosts = filteredPosts
+          .sort((a: Post, b: Post) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 6)
+        
+        setLatestPosts(sortedPosts)
+      }
     } catch (error) {
       console.error('Failed to fetch latest posts:', error)
     } finally {
