@@ -23,18 +23,7 @@ import {
   Input
 } from '@/components/ui'
 import { Breadcrumb } from '@/components/layout'
-
-interface Post {
-  id: number
-  title: string
-  excerpt: string
-  thumbnail_url?: string
-  category: string
-  slug: string
-  created_at: string
-  tags: string
-  is_published: boolean
-}
+import { Post, Category } from '@/types'
 
 const DigitalForensicPage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([])
@@ -85,7 +74,7 @@ const DigitalForensicPage: React.FC = () => {
                          post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
     
     if (selectedCategory === 'all') return matchesSearch
-    return matchesSearch && post.category === selectedCategory
+    return matchesSearch && post.category?.slug === selectedCategory
   })
 
   const formatDate = (dateString: string) => {
@@ -96,8 +85,8 @@ const DigitalForensicPage: React.FC = () => {
     })
   }
 
-  const getCategoryLabel = (category: string) => {
-    const found = subcategories.find(sub => sub.value === category)
+  const getCategoryLabel = (category: Category) => {
+    const found = subcategories.find(sub => sub.value === category?.slug)
     return found ? found.label : 'Digital Forensic'
   }
 

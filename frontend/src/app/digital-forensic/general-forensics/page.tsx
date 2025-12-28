@@ -22,18 +22,7 @@ import {
   Input
 } from '@/components/ui'
 import { Breadcrumb } from '@/components/layout'
-
-interface Post {
-  id: number
-  title: string
-  excerpt: string
-  thumbnail_url?: string
-  category: string
-  slug: string
-  created_at: string
-  tags: string
-  is_published: boolean
-}
+import { Post } from '@/types'
 
 const GeneralForensicsPage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([])
@@ -153,7 +142,7 @@ const GeneralForensicsPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Link href={getPostUrl(post)} className="block">
+                  <Link href={`/digital-forensic/general-forensics/${post.slug}`} className="block">
                     <Card className="group overflow-hidden hover:border-accent-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent-500/10 cursor-pointer h-full">
                       {post.thumbnail_url && (
                         <div className="relative h-48 overflow-hidden">

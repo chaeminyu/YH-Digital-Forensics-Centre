@@ -32,6 +32,7 @@ import {
   ServiceCard,
   Badge
 } from '@/components/ui'
+import { Post, Category } from '@/types'
 
 const services = [
   {
@@ -103,17 +104,6 @@ const industries = [
   }
 ]
 
-interface Post {
-  id: number
-  title: string
-  excerpt: string
-  thumbnail_url?: string
-  category: string
-  slug: string
-  created_at: string
-  tags?: string
-  is_published: boolean
-}
 
 const HomePage: React.FC = () => {
   const [latestPosts, setLatestPosts] = useState<Post[]>([])
@@ -183,8 +173,9 @@ const HomePage: React.FC = () => {
     })
   }
 
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
+  const getCategoryLabel = (category?: Category) => {
+    const slug = category?.slug || category?.name?.toLowerCase()
+    switch (slug) {
       case 'general-forensics': return 'General Forensics'
       case 'evidence-forensics': return 'Evidence Forensics'
       case 'digital-crime': return 'Digital Crime'
@@ -194,8 +185,9 @@ const HomePage: React.FC = () => {
     }
   }
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
+  const getCategoryColor = (category?: Category) => {
+    const slug = category?.slug || category?.name?.toLowerCase()
+    switch (slug) {
       case 'general-forensics':
       case 'evidence-forensics':
       case 'digital-crime':

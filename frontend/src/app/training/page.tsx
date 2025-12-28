@@ -26,25 +26,7 @@ import {
 } from '@/components/ui'
 import { Breadcrumb } from '@/components/layout'
 import { getPostUrl } from '@/utils/postUrls'
-
-
-interface TrainingPost {
-  id: number
-  title: string
-  slug: string
-  excerpt: string
-  content: string
-  thumbnail_url: string | null
-  category: {
-    id: number
-    name: string
-  }
-  tags: string
-  is_published: boolean
-  view_count: number
-  created_at: string
-  updated_at: string
-}
+import { Post } from '@/types'
 const whyChooseTraining = [
   {
     title: 'Expert Instructors',
@@ -69,7 +51,7 @@ const whyChooseTraining = [
 ]
 
 const TrainingPage: React.FC = () => {
-  const [trainingPosts, setTrainingPosts] = useState<TrainingPost[]>([])
+  const [trainingPosts, setTrainingPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -82,7 +64,7 @@ const TrainingPage: React.FC = () => {
           throw new Error('Failed to fetch training posts')
         }
         const data = await response.json()
-        const posts: TrainingPost[] = data.posts || data
+        const posts: Post[] = data.posts || data
         setTrainingPosts(posts)
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Failed to load training posts')
