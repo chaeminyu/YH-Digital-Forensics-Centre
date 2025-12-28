@@ -331,10 +331,10 @@ const PressPage: React.FC = () => {
                   <div>
                     <div className="text-slate-300 font-medium">Email</div>
                     <a 
-                      href="mailto:press@yhdfc.com"
+                      href="mailto:yh@yhforensic.com"
                       className="text-accent-400 hover:text-accent-300 transition-colors"
                     >
-                      press@yhdfc.com
+                      yh@yhforensic.com
                     </a>
                   </div>
                 </div>
@@ -344,10 +344,10 @@ const PressPage: React.FC = () => {
                   <div>
                     <div className="text-slate-300 font-medium">Phone</div>
                     <a 
-                      href="tel:+82-2-1234-5678"
+                      href="tel:+82 (0)10-8402-2752"
                       className="text-accent-400 hover:text-accent-300 transition-colors"
                     >
-                      +82-2-1234-5678
+                        +82 (0)10-8402-2752
                     </a>
                   </div>
                 </div>
