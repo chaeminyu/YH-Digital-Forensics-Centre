@@ -22,6 +22,7 @@ import { authUtils } from '@/utils/auth'
 
 interface PostForm {
   title: string
+  slug: string
   excerpt: string
   content: string
   thumbnail_url: string
@@ -38,6 +39,7 @@ interface PostForm {
 const NewPostPage: React.FC = () => {
   const [formData, setFormData] = useState<PostForm>({
     title: '',
+    slug: '',
     excerpt: '',
     content: '',
     thumbnail_url: '',
@@ -67,12 +69,27 @@ const NewPostPage: React.FC = () => {
   // Debug: log categories
   console.log('Categories:', categories)
 
+  // Function to generate slug from title
+  const generateSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-')     // Replace spaces with hyphens
+      .replace(/-+/g, '-')      // Replace multiple hyphens with single hyphen
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
     setFormData(prev => {
       const newData = {
         ...prev,
         [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      }
+      
+      // Auto-generate slug when title changes
+      if (name === 'title') {
+        newData.slug = generateSlug(value)
       }
       
       // Reset subcategory when main category changes
@@ -95,18 +112,32 @@ const NewPostPage: React.FC = () => {
       setSaving(true)
       setError('')
 
-      // Combine category and subcategory for digital-forensic posts
-      let finalCategory = formData.category
+      // Map category/subcategory to category_id
+      let categoryId = null
       if (formData.category === 'digital-forensic' && formData.subcategory) {
-        finalCategory = formData.subcategory
+        // Map subcategories to their actual IDs in the database
+        const categoryMapping = {
+          'general-forensics': 2,
+          'evidence-forensics': 3, 
+          'digital-crime': 4
+        }
+        categoryId = categoryMapping[formData.subcategory]
+      } else if (formData.category === 'press') {
+        categoryId = 5
+      } else if (formData.category === 'training') {
+        categoryId = 6
       }
 
       const submitData = {
-        ...formData,
-        category: finalCategory,
+        title: formData.title,
+        slug: formData.slug,
+        content: formData.content,
+        excerpt: formData.excerpt,
+        thumbnail_url: formData.thumbnail_url,
+        category_id: categoryId,
+        tags: formData.tags,
         is_published: publish
       }
-      delete submitData.subcategory
 
       const response = await authUtils.fetchWithAuth(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/posts`,
@@ -230,6 +261,25 @@ const NewPostPage: React.FC = () => {
                 className="text-xl"
                 required
               />
+            </Card>
+
+            {/* Slug */}
+            <Card className="p-6">
+              <label htmlFor="slug" className="block text-sm font-medium text-slate-300 mb-2">
+                URL Slug *
+              </label>
+              <Input
+                id="slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleInputChange}
+                placeholder="url-friendly-slug"
+                className="font-mono text-sm"
+                required
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Auto-generated from title. Used in URL: /{formData.category || 'category'}{formData.subcategory ? `/${formData.subcategory}` : ''}/{formData.slug || 'your-slug-here'}
+              </p>
             </Card>
 
             {/* Excerpt */}
