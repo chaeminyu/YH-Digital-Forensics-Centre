@@ -26,7 +26,7 @@ interface PostPageProps {
   }
 }
 
-const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
+const DigitalCrimePostPage: React.FC<PostPageProps> = ({ params }) => {
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -80,8 +80,8 @@ const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
           <Card className="p-12 text-center">
             <h1 className="text-2xl font-bold text-slate-300 mb-4">Post Not Found</h1>
             <p className="text-slate-400 mb-6">{error}</p>
-            <Button href="/digital-forensic/evidence-forensics" variant="outline">
-              ← Back to Evidence Forensics
+            <Button href="/digital-forensic/digital-crime" variant="outline">
+              ← Back to Digital Crime
             </Button>
           </Card>
         </Container>
@@ -92,7 +92,7 @@ const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Digital Forensic', href: '/digital-forensic' },
-    { label: 'Evidence Forensics', href: '/digital-forensic/evidence-forensics' },
+    { label: 'Digital Crime', href: '/digital-forensic/digital-crime' },
     { label: post.title }
   ]
 
@@ -113,11 +113,11 @@ const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
               className="mb-8"
             >
               <Link 
-                href="/digital-forensic/evidence-forensics"
+                href="/digital-forensic/digital-crime"
                 className="inline-flex items-center text-accent-400 hover:text-accent-300 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Evidence Forensics
+                Back to Digital Crime
               </Link>
             </motion.div>
 
@@ -132,7 +132,7 @@ const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
                   <Shield className="w-6 h-6 text-accent-400" />
                 </div>
                 <Badge variant="accent">
-                  Evidence Forensics
+                  Digital Crime
                 </Badge>
               </div>
               
@@ -200,7 +200,7 @@ const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
               className="mt-16 pt-8 border-t border-slate-700"
             >
               <div className="flex justify-between">
-                <Button href="/digital-forensic/evidence-forensics" variant="outline">
+                <Button href="/digital-forensic/digital-crime" variant="outline">
                   ← More Articles
                 </Button>
                 <Button href="/contact" variant="default">
@@ -215,4 +215,4 @@ const EvidenceForensicsPostPage: React.FC<PostPageProps> = ({ params }) => {
   )
 }
 
-export default EvidenceForensicsPostPage
+export default DigitalCrimePostPage

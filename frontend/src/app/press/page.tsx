@@ -23,27 +23,11 @@ import {
   Select
 } from '@/components/ui'
 import { Breadcrumb } from '@/components/layout'
-
-interface PressPost {
-  id: number
-  title: string
-  slug: string
-  excerpt: string
-  content: string
-  thumbnail_url: string | null
-  category: {
-    id: number
-    name: string
-  }
-  tags: string
-  is_published: boolean
-  view_count: number
-  created_at: string
-  updated_at: string
-}
+import { getPostUrl } from '@/utils/postUrls'
+import { Post } from '@/types'
 const PressPage: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<string>('all')
-  const [pressPosts, setPressPosts] = useState<PressPost[]>([])
+  const [pressPosts, setPressPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -56,7 +40,7 @@ const PressPage: React.FC = () => {
           throw new Error('Failed to fetch press posts')
         }
         const data = await response.json()
-        const posts: PressPost[] = data.posts || data
+        const posts: Post[] = data.posts || data
         setPressPosts(posts)
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Failed to load press posts')
@@ -237,7 +221,7 @@ const PressPage: React.FC = () => {
                           <div>
                             <div className="flex items-center space-x-3 mb-2">
                               <Badge variant="secondary" size="sm">
-                                {release.category.name}
+                                {release.category?.name || 'Press & Media'}
                               </Badge>
                               <span className="text-sm text-slate-400">
                                 {formatDate(release.created_at)}
@@ -255,7 +239,7 @@ const PressPage: React.FC = () => {
 
                         <div className="flex items-center justify-between">
                           <Button
-                            href={`/blog/${release.slug}`}
+                            href={getPostUrl(release)}
                             variant="outline"
                             size="sm"
                             className="group"
