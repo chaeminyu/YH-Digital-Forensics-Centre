@@ -206,47 +206,68 @@ const PressPage: React.FC = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Card className="p-8 hover:border-accent-400/30 transition-colors group">
-                    <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                      {/* Date Badge */}
-                      <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center w-16 h-16 rounded-lg bg-accent-400/20 text-accent-400">
-                          <Calendar className="w-6 h-6" />
-                        </div>
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-grow">
-                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
-                          <div>
-                            <div className="flex items-center space-x-3 mb-2">
-                              <Badge variant="secondary" size="sm">
-                                {release.category?.name || 'Press & Media'}
-                              </Badge>
-                              <span className="text-sm text-slate-400">
-                                {formatDate(release.created_at)}
-                              </span>
-                            </div>
-                            <h3 className="text-xl font-semibold text-slate-100 group-hover:text-accent-400 transition-colors leading-tight">
-                              {release.title}
-                            </h3>
+                  <Card className="overflow-hidden hover:border-accent-400/30 transition-colors group cursor-pointer">
+                    <div 
+                      className="block"
+                      onClick={() => window.location.href = getPostUrl(release)}
+                    >
+                      <div className="flex flex-col lg:flex-row">
+                        {/* Thumbnail Image */}
+                        <div className="flex-shrink-0 lg:w-48 lg:-ml-2">
+                          <div className="relative w-full h-48 lg:h-full bg-slate-800/50">
+                            {release.thumbnail_url ? (
+                              <img
+                                src={release.thumbnail_url}
+                                alt={release.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex items-center justify-center w-full h-full bg-accent-400/20 text-accent-400">
+                                <Newspaper className="w-8 h-8" />
+                              </div>
+                            )}
                           </div>
                         </div>
-                        
-                        <p className="text-slate-300 leading-relaxed mb-6">
-                          {release.excerpt}
-                        </p>
 
-                        <div className="flex items-center justify-between">
-                          <Button
-                            href={getPostUrl(release)}
-                            variant="outline"
-                            size="sm"
-                            className="group"
-                          >
-                            Read Full Article
-                            <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                          </Button>
+                        {/* Content */}
+                        <div className="flex-grow p-6 lg:p-8">
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+                            <div className="flex-grow">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <Badge variant="secondary" size="sm">
+                                  {release.category?.name || 'Press & Media'}
+                                </Badge>
+                                <span className="text-sm text-slate-400">
+                                  {formatDate(release.created_at)}
+                                </span>
+                              </div>
+                              <h3 className="text-xl font-semibold text-slate-100 group-hover:text-accent-400 transition-colors leading-tight mb-4">
+                                {release.title}
+                              </h3>
+                              
+                              <p className="text-slate-300 leading-relaxed mb-6">
+                                {release.excerpt}
+                              </p>
+                            </div>
+
+                            {/* Press Release Link on Right */}
+                            <div className="flex-shrink-0">
+                              <a
+                                href={release.slug ? `https://example-press-site.com/${release.slug}` : '#'}
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center px-4 py-2 bg-accent-400/20 text-accent-400 rounded-lg hover:bg-accent-400/30 transition-colors"
+                              >
+                                <ExternalLink className="w-4 h-4 mr-2" />
+                                Press Release
+                              </a>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-400">
+                              Click anywhere to read full article
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

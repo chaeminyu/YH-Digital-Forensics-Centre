@@ -7,7 +7,8 @@ import {
   Eye,
   ArrowLeft,
   Newspaper,
-  Tag
+  Tag,
+  ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
 import { 
@@ -188,6 +189,43 @@ const PressPostPage: React.FC<PostPageProps> = ({ params }) => {
                   alt={post.title}
                   className="w-full h-80 lg:h-96 object-cover rounded-xl"
                 />
+              </motion.div>
+            )}
+
+            {/* Press Release Link Section - Only for Press Posts */}
+            {post.category?.slug === 'press' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="mb-8"
+              >
+                <Card variant="glass" className="p-6 border-accent-400/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-accent-400/20 rounded-lg">
+                        <ExternalLink className="w-5 h-5 text-accent-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-100 mb-1">
+                          Original Press Release
+                        </h3>
+                        <p className="text-sm text-slate-400">
+                          Read the full press release on our media platform
+                        </p>
+                      </div>
+                    </div>
+                    <a
+                      href={post.slug ? `https://example-press-site.com/${post.slug}` : '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-4 py-2 bg-accent-400 text-black rounded-lg hover:bg-accent-300 transition-colors font-medium"
+                    >
+                      View Press Release
+                      <ExternalLink className="w-4 h-4 ml-2" />
+                    </a>
+                  </div>
+                </Card>
               </motion.div>
             )}
 
