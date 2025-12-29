@@ -228,12 +228,27 @@ const TrainingPage: React.FC = () => {
                     )}
                     
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-accent-400" />
-                        <span className="text-sm text-slate-400">
-                          {formatDate(post.created_at)}
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="w-4 h-4 text-accent-400" />
+                          <span className="text-sm text-slate-400">
+                            {formatDate(post.created_at)}
+                          </span>
+                        </div>
+                        {post.training_date && (
+                          <span className="text-xs text-slate-500">
+                            {post.training_date}
+                          </span>
+                        )}
                       </div>
+
+                      {post.client_name && (
+                        <div className="mb-2">
+                          <Badge variant="accent" size="sm" className="text-xs font-medium">
+                            {post.client_name}
+                          </Badge>
+                        </div>
+                      )}
                       
                       <h3 className="text-xl font-semibold text-slate-100 group-hover:text-accent-400 transition-colors line-clamp-2">
                         {post.title}

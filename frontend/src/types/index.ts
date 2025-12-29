@@ -14,6 +14,8 @@ export interface Post {
   category?: Category
   external_url?: string
   source?: string
+  client_name?: string
+  training_date?: string
 }
 
 export interface Category {

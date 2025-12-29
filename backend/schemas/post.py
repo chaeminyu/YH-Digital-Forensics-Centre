@@ -14,6 +14,8 @@ class PostBase(BaseModel):
     is_published: bool = False
     external_url: Optional[str] = None  # Press Settings > External URL
     source: Optional[str] = None        # Press Settings > Source
+    client_name: Optional[str] = None   # Training Settings > Training Client Name
+    training_date: Optional[str] = None # Training Settings > Date
 
 class PostCreate(PostBase):
     pass
@@ -29,6 +31,8 @@ class PostUpdate(BaseModel):
     is_published: Optional[bool] = None
     external_url: Optional[str] = None  # Press Settings > External URL
     source: Optional[str] = None        # Press Settings > Source
+    client_name: Optional[str] = None   # Training Settings > Training Client Name
+    training_date: Optional[str] = None # Training Settings > Date
 
 class Post(PostBase):
     id: int

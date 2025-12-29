@@ -18,6 +18,8 @@ class Post(Base):
     view_count = Column(Integer, default=0)
     external_url = Column(String(500))  # Press Settings > External URL
     source = Column(String(255))        # Press Settings > Source
+    client_name = Column(String(255))   # Training Settings > Training Client Name  
+    training_date = Column(String(50))  # Training Settings > Date
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
