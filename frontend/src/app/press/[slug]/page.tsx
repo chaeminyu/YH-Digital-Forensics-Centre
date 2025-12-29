@@ -192,8 +192,8 @@ const PressPostPage: React.FC<PostPageProps> = ({ params }) => {
               </motion.div>
             )}
 
-            {/* Press Release Link Section - Only for Press Posts */}
-            {post.category?.slug === 'press' && (
+            {/* Press Release Link Section - Only for Press Posts with External URL */}
+            {post.category?.slug === 'press' && post.external_url && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -216,7 +216,7 @@ const PressPostPage: React.FC<PostPageProps> = ({ params }) => {
                       </div>
                     </div>
                     <a
-                      href={post.slug ? `https://example-press-site.com/${post.slug}` : '#'}
+                      href={post.external_url || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center px-4 py-2 bg-accent-400 text-black rounded-lg hover:bg-accent-300 transition-colors font-medium"

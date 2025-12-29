@@ -241,6 +241,13 @@ const PressPage: React.FC = () => {
                                   {formatDate(release.created_at)}
                                 </span>
                               </div>
+                              {release.source && (
+                                <div className="mb-3">
+                                  <Badge variant="accent" size="lg" className="text-sm font-medium">
+                                    {release.source}
+                                  </Badge>
+                                </div>
+                              )}
                               <h3 className="text-xl font-semibold text-slate-100 group-hover:text-accent-400 transition-colors leading-tight mb-4">
                                 {release.title}
                               </h3>
@@ -251,16 +258,20 @@ const PressPage: React.FC = () => {
                             </div>
 
                             {/* Press Release Link on Right */}
-                            <div className="flex-shrink-0">
-                              <a
-                                href={release.slug ? `https://example-press-site.com/${release.slug}` : '#'}
-                                onClick={(e) => e.stopPropagation()}
-                                className="inline-flex items-center px-4 py-2 bg-accent-400/20 text-accent-400 rounded-lg hover:bg-accent-400/30 transition-colors"
-                              >
-                                <ExternalLink className="w-4 h-4 mr-2" />
-                                Press Release
-                              </a>
-                            </div>
+                            {release.external_url && (
+                              <div className="flex-shrink-0">
+                                <a
+                                  href={release.external_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center px-4 py-2 bg-accent-400/20 text-accent-400 rounded-lg hover:bg-accent-400/30 transition-colors"
+                                >
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Press Release
+                                </a>
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex items-center justify-between">

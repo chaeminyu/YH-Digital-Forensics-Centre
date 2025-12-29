@@ -12,6 +12,8 @@ class PostBase(BaseModel):
     category_id: Optional[int] = None
     tags: Optional[str] = None
     is_published: bool = False
+    external_url: Optional[str] = None  # Press Settings > External URL
+    source: Optional[str] = None        # Press Settings > Source
 
 class PostCreate(PostBase):
     pass
@@ -25,6 +27,8 @@ class PostUpdate(BaseModel):
     category_id: Optional[int] = None
     tags: Optional[str] = None
     is_published: Optional[bool] = None
+    external_url: Optional[str] = None  # Press Settings > External URL
+    source: Optional[str] = None        # Press Settings > Source
 
 class Post(PostBase):
     id: int

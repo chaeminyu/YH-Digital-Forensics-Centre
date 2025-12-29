@@ -16,6 +16,8 @@ class Post(Base):
     tags = Column(Text)  # JSON string or comma-separated tags
     is_published = Column(Boolean, default=False, index=True)
     view_count = Column(Integer, default=0)
+    external_url = Column(String(500))  # Press Settings > External URL
+    source = Column(String(255))        # Press Settings > Source
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

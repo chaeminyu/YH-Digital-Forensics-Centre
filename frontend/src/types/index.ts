@@ -12,6 +12,8 @@ export interface Post {
   created_at: string
   updated_at?: string
   category?: Category
+  external_url?: string
+  source?: string
 }
 
 export interface Category {
