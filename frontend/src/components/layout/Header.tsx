@@ -77,6 +77,18 @@ const Header: React.FC = () => {
     setTimeout(checkScrollState, 100)
   }, [pathname])
 
+  // Close mobile menu on scroll
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+    
+    const handleScroll = () => {
+      setIsMobileMenuOpen(false)
+    }
+    
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isMobileMenuOpen])
+
   const isActivePage = (href: string) => {
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
@@ -88,7 +100,8 @@ const Header: React.FC = () => {
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         isScrolled || pathname !== '/'
           ? 'bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50' 
-          : 'bg-transparent'
+          : 'bg-transparent',
+        isMobileMenuOpen ? 'shadow-none' : ''
       )}
     >
       <Container>
@@ -217,38 +230,53 @@ const Header: React.FC = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
+      </Container>
+
+      {/* Mobile Menu - Below Header */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Optional backdrop to dim background */}
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-slate-700/50 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            
+            {/* Menu panel */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="fixed top-16 lg:top-20 left-0 right-0 z-30 lg:hidden bg-[#0a192f] shadow-xl border-b border-slate-700/50"
             >
-              <div className="py-4 space-y-2">
+              <nav className="flex flex-col items-end text-right p-6 space-y-4">
                 {navigation.map((item) => (
-                  <div key={item.label}>
+                  <div key={item.label} className="w-full">
                     <Link
                       href={item.href}
                       className={cn(
-                        'block px-4 py-3 rounded-lg text-base font-medium transition-colors',
+                        'block px-4 py-3 rounded-lg text-lg font-medium transition-colors text-right',
                         isActivePage(item.href)
                           ? 'text-accent-400 bg-accent-400/10'
                           : 'text-slate-300 hover:text-slate-100 hover:bg-slate-800'
                       )}
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item.label}
                     </Link>
                     
                     {/* Mobile Dropdown Items */}
                     {item.dropdown && (
-                      <div className="ml-4 mt-2 space-y-1">
+                      <div className="mr-4 mt-2 space-y-1 text-right">
                         {item.dropdown.map((dropdownItem) => (
                           <Link
                             key={dropdownItem.href}
                             href={dropdownItem.href}
-                            className="block px-4 py-2 text-sm text-slate-400 hover:text-slate-300 rounded-lg transition-colors"
+                            className="block px-4 py-2 text-sm text-slate-400 hover:text-slate-300 rounded-lg transition-colors text-right"
+                            onClick={() => setIsMobileMenuOpen(false)}
                           >
                             {dropdownItem.label}
                           </Link>
@@ -257,35 +285,34 @@ const Header: React.FC = () => {
                     )}
                   </div>
                 ))}
-                
-                {/* Mobile Language Toggle */}
-                <div className="pt-4 px-4">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="flex items-center bg-slate-800/50 rounded-lg border border-slate-600/50 overflow-hidden">
-                      <button className="px-6 py-2 text-sm font-medium bg-accent-400 text-slate-900 transition-colors min-w-[50px] text-center">
-                        EN
-                      </button>
-                      <button 
-                        onClick={() => window.open('https://blog.naver.com/yhdfc', '_blank')}
-                        className="px-6 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors min-w-[60px] text-center"
-                      >
-                        한글
-                      </button>
-                    </div>
-                  </div>
+              </nav>
+              
+              {/* Mobile Language Toggle & CTA */}
+              <div className="flex flex-col items-center space-y-4 p-6 border-t border-slate-700/50">
+                <div className="flex items-center bg-slate-800/50 rounded-lg border border-slate-600/50 overflow-hidden">
+                  <button className="px-6 py-2 text-sm font-medium bg-accent-400 text-slate-900 transition-colors min-w-[50px] text-center">
+                    EN
+                  </button>
+                  <button 
+                    onClick={() => window.open('https://blog.naver.com/yhdfc', '_blank')}
+                    className="px-6 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-700/50 transition-colors min-w-[60px] text-center"
+                  >
+                    한글
+                  </button>
                 </div>
                 
-                {/* Mobile CTA */}
-                <div className="px-4">
-                  <Button href="/contact" className="w-full justify-center">
-                    Request Consultation
-                  </Button>
-                </div>
+                <Button 
+                  href="/contact" 
+                  className="w-full max-w-xs justify-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Request Consultation
+                </Button>
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </Container>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   )
 }
