@@ -102,9 +102,20 @@ const AnalyticsPage: React.FC = () => {
       const countriesData = await countriesResponse.json()
       const recentData = await recentResponse.json()
 
+      console.log('Countries data:', countriesData);
+      console.log('Recent visits data:', recentData);
+
       setStats(statsData)
-      setCountries(countriesData.countries || [])
-      setRecentVisits(recentData.visits || [])
+      
+      // Calculate percentages for countries data
+      const totalVisits = statsData.total_visits || 0
+      const countriesWithPercentage = (countriesData || []).map((country: any) => ({
+        ...country,
+        percentage: totalVisits > 0 ? (country.visit_count / totalVisits) * 100 : 0
+      }))
+      
+      setCountries(countriesWithPercentage)
+      setRecentVisits(recentData || [])
       
     } catch (error) {
       console.error('Failed to fetch analytics data:', error)
