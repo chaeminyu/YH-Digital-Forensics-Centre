@@ -4,6 +4,7 @@ from sqlalchemy import func, text, distinct
 from typing import List
 import asyncio
 from datetime import datetime, timedelta
+import pytz
 
 from database import get_db
 from models.visit import Visit
@@ -11,6 +12,9 @@ from schemas.visit import VisitCreate, VisitResponse, AnalyticsStats, CountrySta
 from utils.geolocation import get_country_from_ip, mask_ip_address
 
 router = APIRouter()
+
+# Korea Standard Time
+KST = pytz.timezone('Asia/Seoul')
 
 def get_client_ip(request: Request) -> str:
     """Extract client IP from request headers"""
@@ -81,22 +85,23 @@ async def get_analytics_stats(db: Session = Depends(get_db)):
         # Unique visitors (unique IP addresses)
         unique_visitors = db.query(func.count(distinct(Visit.ip_address))).scalar()
         
-        # Today's visits
-        today = datetime.utcnow().date()
+        # Today's visits (in KST)
+        now_kst = datetime.now(KST)
+        today_kst = now_kst.date()
         visits_today = db.query(Visit).filter(
-            func.date(Visit.created_at) == today
+            func.date(Visit.created_at) == today_kst
         ).count()
         
-        # This week's visits
-        week_start = today - timedelta(days=today.weekday())
+        # This week's visits (in KST)
+        week_start_kst = today_kst - timedelta(days=today_kst.weekday())
         visits_this_week = db.query(Visit).filter(
-            func.date(Visit.created_at) >= week_start
+            func.date(Visit.created_at) >= week_start_kst
         ).count()
         
-        # This month's visits
-        month_start = today.replace(day=1)
+        # This month's visits (in KST)
+        month_start_kst = today_kst.replace(day=1)
         visits_this_month = db.query(Visit).filter(
-            func.date(Visit.created_at) >= month_start
+            func.date(Visit.created_at) >= month_start_kst
         ).count()
         
         return AnalyticsStats(

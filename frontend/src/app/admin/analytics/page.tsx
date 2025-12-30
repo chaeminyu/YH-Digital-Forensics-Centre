@@ -56,9 +56,16 @@ const getCountryFlag = (countryCode: string | null): string => {
 }
 
 const getTimeAgo = (dateString: string): string => {
-  const now = new Date()
+  // Parse the date assuming it's already in KST
   const date = new Date(dateString)
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  const now = new Date()
+  
+  // Convert both to KST for consistent comparison
+  const kstOffset = 9 * 60 * 60 * 1000 // KST is UTC+9
+  const dateKST = new Date(date.getTime() + kstOffset)
+  const nowKST = new Date(now.getTime() + kstOffset)
+  
+  const diffInSeconds = Math.floor((nowKST.getTime() - dateKST.getTime()) / 1000)
   
   if (diffInSeconds < 60) return `${diffInSeconds}s ago`
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
