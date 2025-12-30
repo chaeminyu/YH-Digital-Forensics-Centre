@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { 
   Section, 
+  SectionHeading,
   Container, 
   Button, 
   Card,
