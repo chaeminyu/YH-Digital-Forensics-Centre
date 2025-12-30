@@ -45,6 +45,7 @@ const AdminInquiriesPage: React.FC = () => {
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [onStatusUpdate, setOnStatusUpdate] = useState<(() => void) | null>(null)
 
   const statusOptions = [
     { value: 'all', label: 'All Inquiries' },
@@ -66,6 +67,20 @@ const AdminInquiriesPage: React.FC = () => {
     fetchInquiries()
   }, [])
 
+  // Handle URL parameter for pre-selecting an inquiry
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const selectedId = urlParams.get('selected')
+    if (selectedId && inquiries.length > 0) {
+      const inquiry = inquiries.find(inq => inq.id === parseInt(selectedId))
+      if (inquiry) {
+        setSelectedInquiry(inquiry)
+        // Remove the parameter from URL
+        window.history.replaceState({}, '', window.location.pathname)
+      }
+    }
+  }, [inquiries])
+
   const fetchInquiries = async () => {
     try {
       setLoading(true)
@@ -84,20 +99,31 @@ const AdminInquiriesPage: React.FC = () => {
 
   const handleMarkAsRead = async (inquiryId: number) => {
     try {
+      console.log('handleMarkAsRead called for inquiry:', inquiryId)
       const response = await authUtils.fetchWithAuth(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/inquiries/${inquiryId}`,
         {
           method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({ status: 'read' })
         }
       )
       
       if (response.ok) {
-        setInquiries(inquiries.map(inquiry => 
+        console.log('Successfully marked inquiry as read:', inquiryId)
+        const updatedInquiries = inquiries.map(inquiry => 
           inquiry.id === inquiryId 
             ? { ...inquiry, status: 'read' }
             : inquiry
-        ))
+        )
+        setInquiries(updatedInquiries)
+        
+        // Also update selectedInquiry if it's the same one
+        if (selectedInquiry?.id === inquiryId) {
+          setSelectedInquiry({ ...selectedInquiry, status: 'read' })
+        }
       }
     } catch (error) {
       console.error('Failed to mark as read:', error)
@@ -106,20 +132,47 @@ const AdminInquiriesPage: React.FC = () => {
 
   const handleUpdateStatus = async (inquiryId: number, status: string) => {
     try {
+      console.log('Updating inquiry status:', inquiryId, 'from', selectedInquiry?.status, 'to', status)
+      
       const response = await authUtils.fetchWithAuth(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/inquiries/${inquiryId}`,
         {
           method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({ status })
         }
       )
       
+      console.log('Response:', response.status, response.statusText)
+      
       if (response.ok) {
-        setInquiries(inquiries.map(inquiry => 
+        const responseData = await response.json()
+        console.log('Backend response data:', responseData)
+        
+        const updatedInquiries = inquiries.map(inquiry => 
           inquiry.id === inquiryId 
             ? { ...inquiry, status }
             : inquiry
-        ))
+        )
+        setInquiries(updatedInquiries)
+        console.log('Updated inquiries array for inquiry', inquiryId, 'with status:', status)
+        
+        // Update selected inquiry if it's the one being modified
+        if (selectedInquiry?.id === inquiryId) {
+          const newSelectedInquiry = { ...selectedInquiry, status }
+          setSelectedInquiry(newSelectedInquiry)
+          console.log('Updated selectedInquiry:', newSelectedInquiry)
+        }
+        
+        // Trigger notification badge update in AdminLayout
+        window.dispatchEvent(new CustomEvent('inquiryStatusChanged'))
+        
+        console.log('Status updated successfully to:', status)
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to update status:', errorData)
       }
     } catch (error) {
       console.error('Failed to update status:', error)
@@ -149,8 +202,10 @@ const AdminInquiriesPage: React.FC = () => {
   }
 
   const openInquiryDetail = (inquiry: Inquiry) => {
+    console.log('Opening inquiry detail for:', inquiry.id, 'Status:', inquiry.status)
     setSelectedInquiry(inquiry)
     if (inquiry.status === 'new') {
+      console.log('Marking as read because status is new')
       handleMarkAsRead(inquiry.id)
     }
   }
@@ -312,7 +367,10 @@ const AdminInquiriesPage: React.FC = () => {
                               ? 'bg-blue-500/5 border-blue-500/20' 
                               : 'border-slate-600'
                         }`}
-                        onClick={() => openInquiryDetail(inquiry)}
+                        onClick={() => {
+                          console.log('Card clicked for inquiry:', inquiry.id, 'with status:', inquiry.status)
+                          openInquiryDetail(inquiry)
+                        }}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
@@ -369,12 +427,25 @@ const AdminInquiriesPage: React.FC = () => {
             <Card className="p-6 h-full flex flex-col">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-slate-100">Inquiry Details</h2>
-                <button
-                  onClick={() => setShowDeleteDialog(selectedInquiry.id)}
-                  className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => {
+                      console.log('Closing inquiry detail panel')
+                      setSelectedInquiry(null)
+                    }}
+                    className="p-2 text-slate-400 hover:text-slate-100 hover:bg-slate-700 rounded transition-colors"
+                    title="Close"
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteDialog(selectedInquiry.id)}
+                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
               
               {/* Contact Info */}

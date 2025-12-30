@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Layout } from '@/components/layout'
+import { VisitTracker } from '@/components/VisitTracker'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -97,6 +98,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
+        <VisitTracker />
         <Layout>{children}</Layout>
       </body>
     </html>

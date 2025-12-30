@@ -17,7 +17,8 @@ import {
   Bell,
   Search,
   User,
-  ChevronDown
+  ChevronDown,
+  BarChart3
 } from 'lucide-react'
 import { Card, Badge, Button } from '@/components/ui'
 import { authUtils } from '@/utils/auth'
@@ -36,8 +37,10 @@ interface MenuItem {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [unreadInquiries, setUnreadInquiries] = useState<any[]>([])
   const router = useRouter()
   const pathname = usePathname()
 
@@ -46,6 +49,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { label: 'Posts', href: '/admin/posts', icon: FileText },
     { label: 'Categories', href: '/admin/categories', icon: Tag },
     { label: 'Inquiries', href: '/admin/inquiries', icon: Mail, badge: unreadCount > 0 ? unreadCount.toString() : undefined },
+    { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { label: 'Settings', href: '/admin/settings', icon: Settings }
   ]
 
@@ -70,14 +74,59 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     }
   }
 
+  const fetchUnreadInquiries = async () => {
+    try {
+      const response = await authUtils.fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/inquiries?is_read=false&limit=5`)
+      if (response.ok) {
+        const data = await response.json()
+        const inquiries = data.inquiries || data || []
+        setUnreadInquiries(inquiries.slice(0, 5))
+      }
+    } catch (error) {
+      console.error('Failed to fetch unread inquiries:', error)
+    }
+  }
+
+  const handleInquiryClick = (inquiryId: number) => {
+    setShowNotifications(false)
+    router.push(`/admin/inquiries?selected=${inquiryId}`)
+  }
+
   // Poll for new inquiries every 30 seconds
   useEffect(() => {
     if (user) {
       fetchUnreadCount()
-      const interval = setInterval(fetchUnreadCount, 30000)
+      fetchUnreadInquiries()
+      const interval = setInterval(() => {
+        fetchUnreadCount()
+        fetchUnreadInquiries()
+      }, 30000)
       return () => clearInterval(interval)
     }
   }, [user])
+
+  // Close notifications on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showNotifications && !(event.target as Element).closest('.notification-dropdown')) {
+        setShowNotifications(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showNotifications])
+
+  // Listen for inquiry status changes to update notification badge
+  useEffect(() => {
+    const handleStatusChange = () => {
+      fetchUnreadCount()
+      fetchUnreadInquiries()
+    }
+
+    window.addEventListener('inquiryStatusChanged', handleStatusChange)
+    return () => window.removeEventListener('inquiryStatusChanged', handleStatusChange)
+  }, [])
 
   const handleLogout = () => {
     authUtils.logout()
@@ -230,8 +279,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/admin/inquiries">
-                <button className="relative p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-700 transition-colors">
+              <div className="relative notification-dropdown">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-700 transition-colors"
+                >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -239,7 +291,52 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     </span>
                   )}
                 </button>
-              </Link>
+
+                {showNotifications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 top-full mt-2 w-80 bg-slate-800 rounded-lg shadow-xl border border-slate-700 z-50"
+                  >
+                    <div className="p-3 border-b border-slate-700">
+                      <h3 className="text-lg font-semibold text-slate-100">Notifications</h3>
+                      <p className="text-sm text-slate-400">{unreadCount} unread inquiries</p>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {unreadInquiries.length === 0 ? (
+                        <div className="p-6 text-center">
+                          <Bell className="w-8 h-8 text-slate-500 mx-auto mb-2" />
+                          <p className="text-slate-400">No new notifications</p>
+                        </div>
+                      ) : (
+                        unreadInquiries.map((inquiry) => (
+                          <button 
+                            key={inquiry.id}
+                            onClick={() => handleInquiryClick(inquiry.id)}
+                            className="w-full p-3 hover:bg-slate-700 text-left border-b border-slate-700/50 last:border-b-0 transition-colors"
+                          >
+                            <p className="font-medium text-slate-200 mb-1">{inquiry.name}</p>
+                            <p className="text-sm text-slate-300 line-clamp-1">{inquiry.subject}</p>
+                            <p className="text-xs text-slate-500 mt-1">
+                              {new Date(inquiry.created_at).toLocaleString()}
+                            </p>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                    <div className="p-3 border-t border-slate-700">
+                      <Link href="/admin/inquiries">
+                        <button 
+                          onClick={() => setShowNotifications(false)}
+                          className="w-full text-sm font-medium text-accent-400 hover:text-accent-300 transition-colors text-center"
+                        >
+                          View All Inquiries →
+                        </button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
               
               <div className="hidden sm:block text-sm text-slate-300">
                 Welcome back, <span className="font-medium text-slate-100">{user.full_name}</span>

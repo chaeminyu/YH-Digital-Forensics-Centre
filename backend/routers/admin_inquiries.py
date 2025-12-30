@@ -18,6 +18,7 @@ async def get_inquiries(
     page: int = 1,
     limit: int = 10,
     is_read: bool = None,
+    status: str = None,
     current_admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
@@ -25,6 +26,9 @@ async def get_inquiries(
     
     if is_read is not None:
         query = query.filter(Inquiry.is_read == is_read)
+    
+    if status is not None:
+        query = query.filter(Inquiry.status == status)
     
     total = query.count()
     inquiries = query.order_by(desc(Inquiry.created_at)).offset((page - 1) * limit).limit(limit).all()
@@ -82,6 +86,9 @@ async def update_inquiry(
     # Update fields if provided
     if inquiry_data.status is not None:
         inquiry.status = inquiry_data.status
+        # Mark as read when status is changed
+        if not inquiry.is_read:
+            inquiry.is_read = True
     if inquiry_data.urgency_level is not None:
         inquiry.urgency_level = inquiry_data.urgency_level
     
