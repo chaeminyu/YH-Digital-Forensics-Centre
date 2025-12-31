@@ -79,47 +79,42 @@ async def get_analytics_stats(db: Session = Depends(get_db)):
     Get overall analytics statistics
     """
     try:
-        # Total visits
-        total_visits = db.query(Visit).count()
+        # Total visitors (unique IP addresses)
+        total_visitors = db.query(func.count(distinct(Visit.ip_address))).scalar() or 0
         
-        # Unique visitors (unique IP addresses)
-        unique_visitors = db.query(func.count(distinct(Visit.ip_address))).scalar()
-        
-        # Today's visits (in KST)
+        # Today's visitors (unique IPs today) - in KST
         now_kst = datetime.now(KST)
         today_kst = now_kst.date()
-        visits_today = db.query(Visit).filter(
+        visitors_today = db.query(func.count(distinct(Visit.ip_address))).filter(
             func.date(Visit.created_at) == today_kst
-        ).count()
+        ).scalar() or 0
         
-        # This week's visits (in KST)
+        # This week's visitors (unique IPs this week) - in KST
         week_start_kst = today_kst - timedelta(days=today_kst.weekday())
-        visits_this_week = db.query(Visit).filter(
+        visitors_this_week = db.query(func.count(distinct(Visit.ip_address))).filter(
             func.date(Visit.created_at) >= week_start_kst
-        ).count()
+        ).scalar() or 0
         
-        # This month's visits (in KST)
+        # This month's visitors (unique IPs this month) - in KST
         month_start_kst = today_kst.replace(day=1)
-        visits_this_month = db.query(Visit).filter(
+        visitors_this_month = db.query(func.count(distinct(Visit.ip_address))).filter(
             func.date(Visit.created_at) >= month_start_kst
-        ).count()
+        ).scalar() or 0
         
         return AnalyticsStats(
-            total_visits=total_visits,
-            unique_visitors=unique_visitors,
-            visits_today=visits_today,
-            visits_this_week=visits_this_week,
-            visits_this_month=visits_this_month
+            total_visitors=total_visitors,
+            visitors_today=visitors_today,
+            visitors_this_week=visitors_this_week,
+            visitors_this_month=visitors_this_month
         )
         
     except Exception as e:
         print(f"Analytics stats error: {e}")
         return AnalyticsStats(
-            total_visits=0,
-            unique_visitors=0,
-            visits_today=0,
-            visits_this_week=0,
-            visits_this_month=0
+            total_visitors=0,
+            visitors_today=0,
+            visitors_this_week=0,
+            visitors_this_month=0
         )
 
 @router.get("/admin/analytics/countries", response_model=List[CountryStats])
@@ -131,20 +126,20 @@ async def get_country_stats(db: Session = Depends(get_db)):
         result = db.query(
             Visit.country_code,
             Visit.country_name,
-            func.count(Visit.id).label('visit_count')
+            func.count(distinct(Visit.ip_address)).label('visitor_count')
         ).filter(
             Visit.country_code.isnot(None)
         ).group_by(
             Visit.country_code, Visit.country_name
         ).order_by(
-            func.count(Visit.id).desc()
+            func.count(distinct(Visit.ip_address)).desc()
         ).limit(20).all()
         
         return [
             CountryStats(
                 country_code=row.country_code,
                 country_name=row.country_name,
-                visit_count=row.visit_count
+                visitor_count=row.visitor_count
             )
             for row in result
         ]

@@ -20,17 +20,16 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import { authUtils } from '@/utils/auth'
 
 interface AnalyticsStats {
-  total_visits: number
-  unique_visitors: number
-  visits_today: number
-  visits_this_week: number
-  visits_this_month: number
+  total_visitors: number
+  visitors_today: number
+  visitors_this_week: number
+  visitors_this_month: number
 }
 
 interface CountryStats {
   country_code: string
   country_name: string
-  visit_count: number
+  visitor_count: number
   percentage: number
 }
 
@@ -75,11 +74,10 @@ const getTimeAgo = (dateString: string): string => {
 
 const AnalyticsPage: React.FC = () => {
   const [stats, setStats] = useState<AnalyticsStats>({
-    total_visits: 0,
-    unique_visitors: 0,
-    visits_today: 0,
-    visits_this_week: 0,
-    visits_this_month: 0
+    total_visitors: 0,
+    visitors_today: 0,
+    visitors_this_week: 0,
+    visitors_this_month: 0
   })
   const [countries, setCountries] = useState<CountryStats[]>([])
   const [recentVisits, setRecentVisits] = useState<RecentVisit[]>([])
@@ -115,10 +113,10 @@ const AnalyticsPage: React.FC = () => {
       setStats(statsData)
       
       // Calculate percentages for countries data
-      const totalVisits = statsData.total_visits || 0
+      const totalVisitors = statsData.total_visitors || 0
       const countriesWithPercentage = (countriesData || []).map((country: any) => ({
         ...country,
-        percentage: totalVisits > 0 ? (country.visit_count / totalVisits) * 100 : 0
+        percentage: totalVisitors > 0 ? (country.visitor_count / totalVisitors) * 100 : 0
       }))
       
       setCountries(countriesWithPercentage)
@@ -134,32 +132,32 @@ const AnalyticsPage: React.FC = () => {
 
   const statCards = [
     {
-      title: 'Total Visits',
-      value: stats.total_visits,
-      icon: Eye,
+      title: 'Total Visitors',
+      value: stats.total_visitors,
+      icon: Users,
       color: 'text-blue-400',
       bgColor: 'bg-blue-500/10',
       borderColor: 'border-blue-500/20'
     },
     {
-      title: 'Unique Visitors',
-      value: stats.unique_visitors,
-      icon: Users,
+      title: 'Visitors Today',
+      value: stats.visitors_today,
+      icon: Calendar,
       color: 'text-green-400',
       bgColor: 'bg-green-500/10',
       borderColor: 'border-green-500/20'
     },
     {
-      title: 'Visits Today',
-      value: stats.visits_today,
-      icon: Calendar,
+      title: 'Visitors This Week',
+      value: stats.visitors_this_week,
+      icon: Eye,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/10',
       borderColor: 'border-purple-500/20'
     },
     {
-      title: 'Visits This Month',
-      value: stats.visits_this_month,
+      title: 'Visitors This Month',
+      value: stats.visitors_this_month,
       icon: TrendingUp,
       color: 'text-accent-400',
       bgColor: 'bg-accent-500/10',
@@ -268,7 +266,7 @@ const AnalyticsPage: React.FC = () => {
                     <div className="grid grid-cols-4 gap-4 text-xs font-medium text-slate-400 uppercase tracking-wide pb-2 border-b border-slate-700">
                       <span>Country</span>
                       <span>Flag</span>
-                      <span>Visits</span>
+                      <span>Visitors</span>
                       <span>%</span>
                     </div>
                     {countries.slice(0, 10).map((country, index) => (
@@ -280,7 +278,7 @@ const AnalyticsPage: React.FC = () => {
                           {getCountryFlag(country.country_code)}
                         </span>
                         <span className="text-slate-300 text-sm font-medium">
-                          {country.visit_count.toLocaleString()}
+                          {country.visitor_count.toLocaleString()}
                         </span>
                         <span className="text-accent-400 text-sm font-medium">
                           {country.percentage.toFixed(1)}%
@@ -357,7 +355,7 @@ const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* Empty State for No Data */}
-        {stats.total_visits === 0 && (
+        {stats.total_visitors === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
