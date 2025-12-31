@@ -252,13 +252,13 @@ const Header: React.FC = () => {
               exit={{ opacity: 0, y: -10 }}
               className="fixed top-16 lg:top-20 left-0 right-0 z-30 lg:hidden bg-[#0a192f] shadow-xl border-b border-slate-700/50"
             >
-              <nav className="flex flex-col items-end text-right p-6 space-y-4">
+              <nav className="flex flex-col items-end text-right p-4 space-y-2">
                 {navigation.map((item) => (
                   <div key={item.label} className="w-full">
                     <Link
                       href={item.href}
                       className={cn(
-                        'block px-4 py-3 rounded-lg text-lg font-medium transition-colors text-right',
+                        'block px-4 py-2 rounded-lg text-lg font-medium transition-colors text-right',
                         isActivePage(item.href)
                           ? 'text-accent-400 bg-accent-400/10'
                           : 'text-slate-300 hover:text-slate-100 hover:bg-slate-800'
@@ -270,12 +270,12 @@ const Header: React.FC = () => {
                     
                     {/* Mobile Dropdown Items */}
                     {item.dropdown && (
-                      <div className="mr-4 mt-2 space-y-1 text-right">
+                      <div className="mr-4 mt-1 space-y-0.5 text-right">
                         {item.dropdown.map((dropdownItem) => (
                           <Link
                             key={dropdownItem.href}
                             href={dropdownItem.href}
-                            className="block px-4 py-2 text-sm text-slate-400 hover:text-slate-300 rounded-lg transition-colors text-right"
+                            className="block px-4 py-1 text-sm text-slate-400 hover:text-slate-300 rounded-lg transition-colors text-right"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             {dropdownItem.label}

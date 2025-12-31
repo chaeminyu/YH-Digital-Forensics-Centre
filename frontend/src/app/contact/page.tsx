@@ -76,13 +76,19 @@ const ContactPage: React.FC = () => {
     setSubmitStatus('idle')
     setErrorMessage('')
 
+    // Auto-fill subject if empty
+    const submitData = {
+      ...formData,
+      subject: formData.subject.trim() || 'New Inquiry'
+    }
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inquiries`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       })
 
       if (response.ok) {
@@ -190,23 +196,65 @@ const ContactPage: React.FC = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <Card className="p-6">
-                      <div className="flex items-start space-x-4">
-                        <div className={`p-3 rounded-lg bg-slate-700 ${info.color}`}>
-                          <info.icon className="w-6 h-6" />
+{info.title === 'Phone Number' ? (
+                      <a href="tel:+82-10-8402-2752" className="block">
+                        <Card className="p-6 hover:bg-slate-700/50 transition-colors cursor-pointer">
+                          <div className="flex items-start space-x-4">
+                            <div className={`p-3 rounded-lg bg-slate-700 ${info.color}`}>
+                              <info.icon className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-slate-100 mb-2">
+                                {info.title}
+                              </h3>
+                              {info.details.map((detail, detailIndex) => (
+                                <p key={detailIndex} className="text-slate-300 text-sm">
+                                  {detail}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        </Card>
+                      </a>
+                    ) : info.title === 'Email Contact' ? (
+                      <a href="mailto:yh@yhforensic.com" className="block">
+                        <Card className="p-6 hover:bg-slate-700/50 transition-colors cursor-pointer">
+                          <div className="flex items-start space-x-4">
+                            <div className={`p-3 rounded-lg bg-slate-700 ${info.color}`}>
+                              <info.icon className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-slate-100 mb-2">
+                                {info.title}
+                              </h3>
+                              {info.details.map((detail, detailIndex) => (
+                                <p key={detailIndex} className="text-slate-300 text-sm">
+                                  {detail}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        </Card>
+                      </a>
+                    ) : (
+                      <Card className="p-6">
+                        <div className="flex items-start space-x-4">
+                          <div className={`p-3 rounded-lg bg-slate-700 ${info.color}`}>
+                            <info.icon className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-100 mb-2">
+                              {info.title}
+                            </h3>
+                            {info.details.map((detail, detailIndex) => (
+                              <p key={detailIndex} className="text-slate-300 text-sm">
+                                {detail}
+                              </p>
+                            ))}
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-100 mb-2">
-                            {info.title}
-                          </h3>
-                          {info.details.map((detail, detailIndex) => (
-                            <p key={detailIndex} className="text-slate-300 text-sm">
-                              {detail}
-                            </p>
-                          ))}
-                        </div>
-                      </div>
-                    </Card>
+                      </Card>
+                    )}
                   </motion.div>
                 ))}
               </div>
@@ -383,14 +431,13 @@ const ContactPage: React.FC = () => {
                     {/* Urgency */}
                     <div>
                       <label htmlFor="urgency_level" className="block text-sm font-medium text-slate-300 mb-2">
-                        Urgency Level *
+                        Urgency Level
                       </label>
                       <Select
                         id="urgency_level"
                         name="urgency_level"
                         value={formData.urgency_level}
                         onChange={handleInputChange}
-                        required
                       >
                         {urgencyLevels.map((level) => (
                           <option key={level.value} value={level.value}>
@@ -403,13 +450,12 @@ const ContactPage: React.FC = () => {
                     {/* Subject */}
                     <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-2">
-                        Subject *
+                        Subject
                       </label>
                       <Input
                         id="subject"
                         name="subject"
                         type="text"
-                        required
                         value={formData.subject}
                         onChange={handleInputChange}
                         placeholder="Brief description of your inquiry"
