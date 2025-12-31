@@ -85,12 +85,32 @@ const AdminSettingsPage: React.FC = () => {
     try {
       setSaving(true)
       
-      // For now, we'll just save to localStorage since there's no backend endpoint
-      // In a real app, this would call an API endpoint
-      localStorage.setItem('yhdfc_settings', JSON.stringify(settings))
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site-settings/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company_name: settings.companyName,
+          company_email: settings.companyEmail,
+          company_phone: settings.companyPhone,
+          company_address: settings.companyAddress,
+          default_meta_title: settings.defaultMetaTitle,
+          default_meta_description: settings.defaultMetaDescription,
+          default_keywords: settings.defaultKeywords,
+          facebook_url: settings.facebookUrl,
+          twitter_url: settings.twitterUrl,
+          linkedin_url: settings.linkedinUrl,
+          youtube_url: settings.youtubeUrl,
+          maintenance_mode: settings.maintenanceMode,
+          allow_registration: settings.allowRegistration,
+          require_email_verification: settings.requireEmailVerification
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings')
+      }
       
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
@@ -101,17 +121,36 @@ const AdminSettingsPage: React.FC = () => {
     }
   }
 
-  // Load settings from localStorage on mount
+  // Load settings from API on mount
   useEffect(() => {
-    const savedSettings = localStorage.getItem('yhdfc_settings')
-    if (savedSettings) {
+    const loadSettings = async () => {
       try {
-        const parsed = JSON.parse(savedSettings)
-        setSettings(prev => ({ ...prev, ...parsed }))
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site-settings/`)
+        if (response.ok) {
+          const data = await response.json()
+          setSettings({
+            companyName: data.company_name,
+            companyEmail: data.company_email,
+            companyPhone: data.company_phone,
+            companyAddress: data.company_address,
+            defaultMetaTitle: data.default_meta_title,
+            defaultMetaDescription: data.default_meta_description,
+            defaultKeywords: data.default_keywords,
+            facebookUrl: data.facebook_url,
+            twitterUrl: data.twitter_url,
+            linkedinUrl: data.linkedin_url,
+            youtubeUrl: data.youtube_url,
+            maintenanceMode: data.maintenance_mode,
+            allowRegistration: data.allow_registration,
+            requireEmailVerification: data.require_email_verification
+          })
+        }
       } catch (error) {
         console.error('Failed to load settings:', error)
       }
     }
+
+    loadSettings()
   }, [])
 
   const renderCompanyTab = () => (

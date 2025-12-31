@@ -14,9 +14,10 @@ interface SEOProps {
   tags?: string[]
 }
 
+// Default SEO values - these will be overridden by dynamic values when available
 const defaultSEO = {
   title: 'YH Digital Forensic Center - Professional Digital Forensics & Cybersecurity',
-  description: 'Leading digital forensics experts in Korea providing computer forensics, mobile device analysis, cloud forensics, data recovery, and expert witness services for legal and corporate clients.',
+  description: 'Professional digital forensics services including mobile forensics, computer forensics, and cyber investigation training.',
   keywords: 'digital forensics, computer forensics, mobile forensics, cloud forensics, data recovery, expert witness, cybersecurity, Korea, Seoul, digital investigation',
   image: '/images/yhdfc-og.png',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://yhdfc.com',

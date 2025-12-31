@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from database import engine, Base
-from routers import posts, categories, inquiries, admin_auth, admin_posts, admin_inquiries, admin_categories, admin_dashboard, upload, tracking
+from routers import posts, categories, inquiries, admin_auth, admin_posts, admin_inquiries, admin_categories, admin_dashboard, upload, tracking, site_settings
 
 load_dotenv()
 
@@ -56,6 +56,7 @@ app.include_router(admin_categories.router, prefix="/api/admin", tags=["admin_ca
 app.include_router(admin_dashboard.router, prefix="/api/admin", tags=["admin_dashboard"])
 app.include_router(upload.router, prefix="/api/admin", tags=["upload"])
 app.include_router(tracking.router, prefix="/api", tags=["tracking"])
+app.include_router(site_settings.router)
 
 @app.get("/")
 async def root():
