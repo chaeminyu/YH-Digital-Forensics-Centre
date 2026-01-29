@@ -137,7 +137,11 @@ const NewPostPage: React.FC = () => {
         thumbnail_url: formData.thumbnail_url,
         category_id: categoryId,
         tags: formData.tags,
-        is_published: publish
+        is_published: publish,
+        source: formData.source,
+        external_url: formData.external_url,
+        training_date: formData.training_date,
+        client_name: formData.client_name
       }
 
       const response = await authUtils.fetchWithAuth(
