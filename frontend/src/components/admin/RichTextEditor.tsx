@@ -2,8 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-// Temporarily disable image resizing due to version conflicts
-// import Image from '@tiptap/extension-image'
+import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { Color } from '@tiptap/extension-color'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -49,11 +48,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      // Image.configure({
-      //   HTMLAttributes: {
-      //     class: 'max-w-full h-auto rounded-lg',
-      //   },
-      // }), // Disabled due to version conflicts
+      Image.configure({
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-lg',
+        },
+      }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
@@ -87,8 +86,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const addImage = () => {
     if (imageUrl && editor) {
-      // Basic image insertion as HTML
-      editor.chain().focus().insertContent(`<img src="${imageUrl}" alt="image" style="max-width: 100%; height: auto;" />`).run()
+      // Use TipTap Image command for proper handling
+      editor.chain().focus().setImage({ src: imageUrl, alt: 'image' }).run()
       setImageUrl('')
       setShowImageDialog(false)
     }
@@ -113,9 +112,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
       if (response.ok) {
         const data = await response.json()
-        // Auto-insert the uploaded image
+        // Auto-insert the uploaded image using TipTap Image command
         if (editor) {
-          editor.chain().focus().insertContent(`<img src="${data.url}" alt="${data.original_filename}" style="max-width: 100%; height: auto;" />`).run()
+          editor.chain().focus().setImage({ src: data.url, alt: data.original_filename || 'uploaded image' }).run()
           setShowImageDialog(false)
         }
       } else {
