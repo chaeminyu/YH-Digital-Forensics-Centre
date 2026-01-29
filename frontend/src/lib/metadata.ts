@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 export async function fetchSiteSettings() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/site-settings/`, {
-      cache: 'no-store' // Always fetch fresh data
+      next: { revalidate: 3600 } // Revalidate every hour instead of no-store
     })
     
     if (!response.ok) {
