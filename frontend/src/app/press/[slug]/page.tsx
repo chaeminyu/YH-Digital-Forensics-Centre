@@ -233,11 +233,11 @@ const PressPostPage: React.FC<PostPageProps> = ({ params }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="prose prose-slate prose-lg max-w-none prose-invert"
+              className="prose prose-slate prose-lg max-w-none prose-invert prose-img:rounded-lg prose-img:shadow-lg"
             >
               <div 
                 dangerouslySetInnerHTML={{ __html: post.content }}
-                className="text-slate-300 leading-relaxed"
+                className="text-slate-300 leading-relaxed [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-4 [&_img]:block"
               />
             </motion.article>
 

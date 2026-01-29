@@ -277,7 +277,7 @@ const BlogDetailPage: React.FC<{ params: { slug: string } }> = ({ params }) => {
               >
                 <Card className="p-8">
                   <div 
-                    className="prose prose-slate prose-lg max-w-none"
+                    className="prose prose-slate prose-lg max-w-none text-slate-300 leading-relaxed [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-4 [&_img]:block"
                     dangerouslySetInnerHTML={{ __html: post.content }}
                   />
                   

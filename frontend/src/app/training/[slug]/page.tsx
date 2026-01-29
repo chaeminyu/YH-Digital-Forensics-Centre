@@ -199,7 +199,7 @@ const TrainingPostPage: React.FC<PostPageProps> = ({ params }) => {
             >
               <div 
                 dangerouslySetInnerHTML={{ __html: post.content }}
-                className="text-slate-300 leading-relaxed"
+                className="text-slate-300 leading-relaxed [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-4 [&_img]:block"
               />
             </motion.article>
 
