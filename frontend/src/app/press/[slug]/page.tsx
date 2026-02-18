@@ -237,8 +237,20 @@ const PressPostPage: React.FC<PostPageProps> = ({ params }) => {
             >
               <div 
                 dangerouslySetInnerHTML={{ __html: post.content }}
-                className="text-slate-300 leading-relaxed [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:my-4 [&_img]:block"
+                className="text-slate-300 leading-relaxed"
+                style={{
+                  // Force image styles with !important
+                }}
               />
+              <style jsx>{`
+                div :global(img) {
+                  max-width: 100% !important;
+                  height: auto !important;
+                  border-radius: 8px !important;
+                  margin: 16px 0 !important;
+                  display: block !important;
+                }
+              `}</style>
             </motion.article>
 
             <motion.div
