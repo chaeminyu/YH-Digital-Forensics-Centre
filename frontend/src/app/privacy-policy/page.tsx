@@ -9,7 +9,8 @@ import {
   Mail,
   UserCheck,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  Scale
 } from 'lucide-react'
 import { 
   Section, 
