@@ -276,21 +276,6 @@ const AdminLoginPage: React.FC = () => {
               </div>
             </div>
           </Card>
-
-          {/* Development Note */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="mt-6 text-center"
-          >
-            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-              <div className="text-blue-400 font-medium text-sm mb-1">Development Access</div>
-              <div className="text-blue-300 text-xs">
-                Default admin credentials: admin / admin123
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </div>
