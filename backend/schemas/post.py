@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
 from .category import Category
+from utils.sanitization import sanitize_plain_text, sanitize_html_content, sanitize_url
 
 class PostBase(BaseModel):
     title: str
@@ -18,7 +19,35 @@ class PostBase(BaseModel):
     training_date: Optional[str] = None # Training Settings > Date
 
 class PostCreate(PostBase):
-    pass
+    @field_validator('title', mode='before')
+    @classmethod
+    def sanitize_title(cls, v):
+        return sanitize_plain_text(v) if v else v
+    
+    @field_validator('content', mode='before')
+    @classmethod
+    def sanitize_content(cls, v):
+        return sanitize_html_content(v) if v else v
+    
+    @field_validator('excerpt', mode='before')
+    @classmethod
+    def sanitize_excerpt(cls, v):
+        return sanitize_plain_text(v) if v else v
+    
+    @field_validator('external_url', mode='before')
+    @classmethod
+    def sanitize_external_url(cls, v):
+        return sanitize_url(v) if v else v
+    
+    @field_validator('source', mode='before')
+    @classmethod
+    def sanitize_source(cls, v):
+        return sanitize_plain_text(v) if v else v
+    
+    @field_validator('client_name', mode='before')
+    @classmethod
+    def sanitize_client_name(cls, v):
+        return sanitize_plain_text(v) if v else v
 
 class PostUpdate(BaseModel):
     title: Optional[str] = None
@@ -33,6 +62,36 @@ class PostUpdate(BaseModel):
     source: Optional[str] = None        # Press Settings > Source
     client_name: Optional[str] = None   # Training Settings > Training Client Name
     training_date: Optional[str] = None # Training Settings > Date
+    
+    @field_validator('title', mode='before')
+    @classmethod
+    def sanitize_title(cls, v):
+        return sanitize_plain_text(v) if v else v
+    
+    @field_validator('content', mode='before')
+    @classmethod
+    def sanitize_content(cls, v):
+        return sanitize_html_content(v) if v else v
+    
+    @field_validator('excerpt', mode='before')
+    @classmethod
+    def sanitize_excerpt(cls, v):
+        return sanitize_plain_text(v) if v else v
+    
+    @field_validator('external_url', mode='before')
+    @classmethod
+    def sanitize_external_url(cls, v):
+        return sanitize_url(v) if v else v
+    
+    @field_validator('source', mode='before')
+    @classmethod
+    def sanitize_source(cls, v):
+        return sanitize_plain_text(v) if v else v
+    
+    @field_validator('client_name', mode='before')
+    @classmethod
+    def sanitize_client_name(cls, v):
+        return sanitize_plain_text(v) if v else v
 
 class Post(PostBase):
     id: int

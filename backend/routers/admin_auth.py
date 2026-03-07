@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 import os
+import logging
 
 from database import get_db
 from auth import authenticate_admin, create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM
@@ -10,11 +13,16 @@ from schemas.auth import LoginRequest, Token, RefreshTokenRequest
 
 router = APIRouter()
 security = HTTPBearer()
+limiter = Limiter(key_func=get_remote_address)
+
+logger = logging.getLogger(__name__)
 
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     admin = authenticate_admin(db, form_data.username, form_data.password)
     if not admin:
+        logger.warning(f"Failed login attempt for username: {form_data.username} from IP: {get_remote_address(request)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
