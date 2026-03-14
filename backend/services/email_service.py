@@ -361,13 +361,13 @@ class EmailService:
             text_body = "\n".join(lines)
             
             # Prepare message with both text and HTML
-            # Use mixed subtype to ensure both text and HTML are included properly
+            # Use html subtype with both text body and HTML body
             message = MessageSchema(
                 subject=subject,
                 recipients=[self.admin_email],
                 body=text_body,
                 html=html_body,
-                subtype=MessageType.mixed
+                subtype=MessageType.html
             )
             
             logger.info(f"Prepared message to send to {self.admin_email}")
