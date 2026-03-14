@@ -6,6 +6,7 @@ from typing import List, Optional
 from schemas.inquiry import Inquiry
 import logging
 from pathlib import Path
+import html
 
 logger = logging.getLogger(__name__)
 
@@ -190,6 +191,8 @@ class EmailService:
                     color: #374151;
                     margin: 0;
                     white-space: pre-wrap;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
                 }}
                 .footer {{
                     background-color: #1f2937;
@@ -248,19 +251,19 @@ class EmailService:
                         <div class="info-grid">
                             <div class="info-item">
                                 <div class="info-label">Full Name</div>
-                                <div class="info-value">{inquiry.name}</div>
+                                <div class="info-value">{html.escape(inquiry.name)}</div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Email Address</div>
-                                <div class="info-value">{inquiry.email}</div>
+                                <div class="info-value">{html.escape(inquiry.email)}</div>
                             </div>
                             {f'''<div class="info-item">
                                 <div class="info-label">Company</div>
-                                <div class="info-value">{inquiry.company}</div>
+                                <div class="info-value">{html.escape(inquiry.company)}</div>
                             </div>''' if inquiry.company else ''}
                             {f'''<div class="info-item">
                                 <div class="info-label">Phone Number</div>
-                                <div class="info-value">{inquiry.country_code} {inquiry.phone}</div>
+                                <div class="info-value">{html.escape(inquiry.country_code or "")} {html.escape(inquiry.phone)}</div>
                             </div>''' if inquiry.phone else ''}
                         </div>
                     </div>
@@ -268,11 +271,11 @@ class EmailService:
                     <div class="section">
                         <h2 class="section-title">📨 Inquiry Details</h2>
                         <div class="subject-box">
-                            <p class="subject-text">{inquiry.subject}</p>
+                            <p class="subject-text">{html.escape(inquiry.subject)}</p>
                         </div>
                         
                         <div class="message-box">
-                            <p class="message-text">{inquiry.message}</p>
+                            <p class="message-text">{html.escape(inquiry.message).replace('\n', '<br>')}</p>
                         </div>
                         
                         <div class="timestamp">
@@ -355,15 +358,16 @@ class EmailService:
                 "YH Digital Forensic Center website contact form."
             ])
             
-            text_body = "\r\n".join(lines)
+            text_body = "\n".join(lines)
             
             # Prepare message with both text and HTML
+            # Use mixed subtype to ensure both text and HTML are included properly
             message = MessageSchema(
                 subject=subject,
                 recipients=[self.admin_email],
                 body=text_body,
                 html=html_body,
-                subtype=MessageType.html
+                subtype=MessageType.mixed
             )
             
             logger.info(f"Prepared message to send to {self.admin_email}")
