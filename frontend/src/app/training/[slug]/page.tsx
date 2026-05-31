@@ -176,21 +176,6 @@ const TrainingPostPage: React.FC<PostPageProps> = ({ params }) => {
               </div>
             </motion.header>
 
-            {post.thumbnail_url && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="mb-12"
-              >
-                <img
-                  src={post.thumbnail_url}
-                  alt={post.title}
-                  className="w-full h-80 lg:h-96 object-cover rounded-xl"
-                />
-              </motion.div>
-            )}
-
             <motion.article
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

@@ -216,7 +216,10 @@ const TrainingPage: React.FC = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Card className="p-6 h-full hover:border-accent-400/30 transition-colors group">
+                  <Card
+                    className="p-6 h-full hover:border-accent-400/30 transition-colors group cursor-pointer"
+                    onClick={() => window.location.href = getPostUrl(post)}
+                  >
                     {post.thumbnail_url && (
                       <div className="aspect-video bg-slate-700 rounded-lg mb-4 overflow-hidden">
                         <img
@@ -258,11 +261,12 @@ const TrainingPage: React.FC = () => {
                         {post.excerpt}
                       </p>
                       
-                      <Button 
+                      <Button
                         href={getPostUrl(post)}
-                        variant="ghost" 
+                        variant="ghost"
                         size="sm"
                         className="mt-4"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         Read More
                         <ArrowRight className="w-3 h-3 ml-1" />
