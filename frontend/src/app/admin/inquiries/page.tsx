@@ -1,22 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
-  Filter,
   Mail,
   MailOpen,
   Trash2,
   Clock,
   AlertTriangle,
-  Eye,
   Building,
   Phone,
-  Calendar,
-  User,
   CheckCircle,
-  XCircle
+  XCircle,
+  ChevronDown
 } from 'lucide-react'
 import { Card, Badge, Button, Input, Select } from '@/components/ui'
 import AdminLayout from '@/components/admin/AdminLayout'
@@ -277,277 +274,237 @@ const AdminInquiriesPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 h-[calc(100vh-8rem)]">
-        {/* Inquiries List */}
-        <div className="xl:col-span-2 flex flex-col">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-slate-100 mb-2">Inquiries Management</h1>
-            <p className="text-slate-400">Manage customer inquiries and support requests.</p>
-          </div>
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-100 mb-2">Inquiries Management</h1>
+          <p className="text-slate-400">Manage customer inquiries and support requests.</p>
+        </div>
 
-          {/* Filters */}
-          <Card className="p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <Input
-                  type="text"
-                  placeholder="Search inquiries..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                {statusOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-              
-              <Select
-                value={urgencyFilter}
-                onChange={(e) => setUrgencyFilter(e.target.value)}
-              >
-                {urgencyOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-              
-              <div className="flex items-center space-x-2">
-                <Badge variant="secondary" size="sm">
-                  {filteredInquiries.length} inquiries
-                </Badge>
-                <Badge variant="accent" size="sm">
-                  {filteredInquiries.filter(i => i.status === 'new').length} new
-                </Badge>
-              </div>
+        {/* Filters */}
+        <Card className="p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Input
+                type="text"
+                placeholder="Search inquiries..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
             </div>
-          </Card>
 
-          {/* Inquiries List */}
-          <div className="flex-1 overflow-hidden">
-            {filteredInquiries.length === 0 ? (
-              <Card className="p-12 text-center">
-                <Mail className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-300 mb-2">No inquiries found</h3>
-                <p className="text-slate-400">
-                  {searchQuery || statusFilter !== 'all' || urgencyFilter !== 'all' 
-                    ? 'Try adjusting your search or filter criteria.'
-                    : 'No customer inquiries have been received yet.'
-                  }
-                </p>
-              </Card>
-            ) : (
-              <div className="space-y-3 overflow-y-auto h-full pr-2">
-                {filteredInquiries.map((inquiry, index) => {
-                  const StatusIcon = getStatusIcon(inquiry.status)
-                  const isUrgent = inquiry.urgency_level === 'urgent'
-                  
-                  return (
-                    <motion.div
-                      key={inquiry.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <Card 
-                        className={`p-4 cursor-pointer transition-all duration-200 hover:border-accent-400/40 hover:shadow-lg hover:shadow-accent-500/5 ${
-                          selectedInquiry?.id === inquiry.id 
-                            ? 'border-accent-400/60 bg-accent-500/10 shadow-accent-500/10' 
-                            : inquiry.status === 'new' 
-                              ? 'bg-blue-500/5 border-blue-500/20' 
-                              : 'border-slate-600'
-                        }`}
-                        onClick={() => {
-                          console.log('Card clicked for inquiry:', inquiry.id, 'with status:', inquiry.status)
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+
+            <Select
+              value={urgencyFilter}
+              onChange={(e) => setUrgencyFilter(e.target.value)}
+            >
+              {urgencyOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+
+            <div className="flex items-center space-x-2">
+              <Badge variant="secondary" size="sm">
+                {filteredInquiries.length} inquiries
+              </Badge>
+              <Badge variant="accent" size="sm">
+                {filteredInquiries.filter(i => i.status === 'new').length} new
+              </Badge>
+            </div>
+          </div>
+        </Card>
+
+        {/* Inquiries List */}
+        {filteredInquiries.length === 0 ? (
+          <Card className="p-12 text-center">
+            <Mail className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-300 mb-2">No inquiries found</h3>
+            <p className="text-slate-400">
+              {searchQuery || statusFilter !== 'all' || urgencyFilter !== 'all'
+                ? 'Try adjusting your search or filter criteria.'
+                : 'No customer inquiries have been received yet.'
+              }
+            </p>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {filteredInquiries.map((inquiry, index) => {
+              const StatusIcon = getStatusIcon(inquiry.status)
+              const isUrgent = inquiry.urgency_level === 'urgent'
+              const isExpanded = selectedInquiry?.id === inquiry.id
+
+              return (
+                <motion.div
+                  key={inquiry.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <Card
+                    className={`transition-all duration-200 ${
+                      isExpanded
+                        ? 'border-accent-400/60 bg-accent-500/10 shadow-accent-500/10'
+                        : inquiry.status === 'new'
+                          ? 'bg-blue-500/5 border-blue-500/20 hover:border-accent-400/40'
+                          : 'border-slate-600 hover:border-accent-400/40'
+                    }`}
+                  >
+                    {/* Summary row — clickable to toggle */}
+                    <div
+                      className="p-4 cursor-pointer"
+                      onClick={() => {
+                        if (isExpanded) {
+                          setSelectedInquiry(null)
+                        } else {
                           openInquiryDetail(inquiry)
-                        }}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <div className={`p-1 rounded border ${getStatusColor(inquiry.status)}`}>
-                                <StatusIcon className="w-3 h-3" />
-                              </div>
-                              <Badge variant="secondary" size="sm" className={getUrgencyColor(inquiry.urgency_level)}>
-                                {inquiry.urgency_level}
-                              </Badge>
-                              {isUrgent && (
-                                <AlertTriangle className="w-4 h-4 text-red-400" />
-                              )}
+                        }
+                      }}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <div className={`p-1 rounded border ${getStatusColor(inquiry.status)}`}>
+                              <StatusIcon className="w-3 h-3" />
                             </div>
-                            
-                            <h3 className="font-semibold text-slate-200 mb-1 line-clamp-1">
-                              {inquiry.subject}
-                            </h3>
-                            
-                            <p className="text-sm text-slate-400 mb-2 line-clamp-1">
-                              From: {inquiry.name} ({inquiry.email})
-                            </p>
-                            
+                            <Badge variant="secondary" size="sm" className={getUrgencyColor(inquiry.urgency_level)}>
+                              {inquiry.urgency_level}
+                            </Badge>
+                            {isUrgent && (
+                              <AlertTriangle className="w-4 h-4 text-red-400" />
+                            )}
+                          </div>
+
+                          <h3 className="font-semibold text-slate-200 mb-1 line-clamp-1">
+                            {inquiry.subject}
+                          </h3>
+
+                          <p className="text-sm text-slate-400 mb-2 line-clamp-1">
+                            From: {inquiry.name} ({inquiry.email})
+                          </p>
+
+                          {!isExpanded && (
                             <p className="text-sm text-slate-300 line-clamp-2 mb-3">
                               {inquiry.message}
                             </p>
-                            
-                            <div className="flex items-center space-x-3 text-xs text-slate-500">
-                              <div className="flex items-center space-x-1">
-                                <Clock className="w-3 h-3" />
-                                <span>{formatDate(inquiry.created_at)}</span>
-                              </div>
-                              {inquiry.company && (
-                                <div className="flex items-center space-x-1">
-                                  <Building className="w-3 h-3" />
-                                  <span>{inquiry.company}</span>
-                                </div>
-                              )}
+                          )}
+
+                          <div className="flex items-center space-x-3 text-xs text-slate-500">
+                            <div className="flex items-center space-x-1">
+                              <Clock className="w-3 h-3" />
+                              <span>{formatDate(inquiry.created_at)}</span>
                             </div>
+                            {inquiry.company && (
+                              <div className="flex items-center space-x-1">
+                                <Building className="w-3 h-3" />
+                                <span>{inquiry.company}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      </Card>
-                    </motion.div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+                        <ChevronDown
+                          className={`w-5 h-5 text-slate-400 flex-shrink-0 mt-1 transition-transform duration-200 ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </div>
+                    </div>
 
-        {/* Inquiry Detail Panel */}
-        <div className="xl:col-span-1">
-          {selectedInquiry ? (
-            <Card className="p-6 h-full flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-slate-100">Inquiry Details</h2>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => {
-                      console.log('Closing inquiry detail panel')
-                      setSelectedInquiry(null)
-                    }}
-                    className="p-2 text-slate-400 hover:text-slate-100 hover:bg-slate-700 rounded transition-colors"
-                    title="Close"
-                  >
-                    <XCircle className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteDialog(selectedInquiry.id)}
-                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-              
-              {/* Contact Info */}
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center space-x-3">
-                  <User className="w-4 h-4 text-slate-400" />
-                  <div>
-                    <div className="font-medium text-slate-200">{selectedInquiry.name}</div>
-                    <div className="text-sm text-slate-400">{selectedInquiry.email}</div>
-                  </div>
-                </div>
-                
-                {selectedInquiry.phone && (
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-300">
-                      {selectedInquiry.country_code || '+82'} {selectedInquiry.phone}
-                    </span>
-                  </div>
-                )}
-                
-                {selectedInquiry.company && (
-                  <div className="flex items-center space-x-3">
-                    <Building className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-300">{selectedInquiry.company}</span>
-                  </div>
-                )}
-                
-                <div className="flex items-center space-x-3">
-                  <Calendar className="w-4 h-4 text-slate-400" />
-                  <span className="text-slate-300">{formatDate(selectedInquiry.created_at)}</span>
-                </div>
-              </div>
-              
-              {/* Status & Urgency */}
-              <div className="flex items-center space-x-3 mb-6">
-                <Badge variant="secondary" className={getStatusColor(selectedInquiry.status)}>
-                  {selectedInquiry.status}
-                </Badge>
-                <Badge variant="secondary" className={getUrgencyColor(selectedInquiry.urgency_level)}>
-                  {selectedInquiry.urgency_level} priority
-                </Badge>
-              </div>
-              
-              {/* Subject */}
-              <div className="mb-4">
-                <h3 className="font-semibold text-slate-200 mb-2">Subject</h3>
-                <p className="text-slate-300">{selectedInquiry.subject}</p>
-              </div>
-              
-              
-              {/* Message */}
-              <div className="flex-1 mb-6">
-                <h3 className="font-semibold text-slate-200 mb-2">Message</h3>
-                <div className="bg-slate-700/50 rounded-lg p-4 max-h-64 overflow-y-auto">
-                  <p className="text-slate-300 whitespace-pre-wrap">{selectedInquiry.message}</p>
-                </div>
-              </div>
-              
-              {/* Actions */}
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    size="sm"
-                    variant={selectedInquiry.status === 'responded' ? 'outline' : 'primary'}
-                    onClick={() => handleUpdateStatus(selectedInquiry.id, 'responded')}
-                    disabled={selectedInquiry.status === 'responded'}
-                  >
-                    {selectedInquiry.status === 'responded' ? 'Responded' : 'Mark Responded'}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={selectedInquiry.status === 'closed' ? 'outline' : 'ghost'}
-                    onClick={() => handleUpdateStatus(selectedInquiry.id, 'closed')}
-                    disabled={selectedInquiry.status === 'closed'}
-                  >
-                    {selectedInquiry.status === 'closed' ? 'Closed' : 'Close'}
-                  </Button>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => window.open(`mailto:${selectedInquiry.email}?subject=Re: ${selectedInquiry.subject}`)}
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Reply via Email
-                </Button>
-              </div>
-            </Card>
-          ) : (
-            <Card className="p-12 text-center h-full flex items-center justify-center">
-              <div>
-                <Eye className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-300 mb-2">Select an Inquiry</h3>
-                <p className="text-slate-400">
-                  Choose an inquiry from the list to view its details and respond.
-                </p>
-              </div>
-            </Card>
-          )}
-        </div>
+                    {/* Expanded details — inline accordion */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-slate-700 p-6 space-y-5">
+                            {inquiry.phone && (
+                              <div className="flex items-center space-x-3">
+                                <Phone className="w-4 h-4 text-slate-400" />
+                                <span className="text-slate-300">
+                                  {inquiry.country_code || '+82'} {inquiry.phone}
+                                </span>
+                              </div>
+                            )}
+
+                            <div>
+                              <h4 className="font-semibold text-slate-200 mb-2">Message</h4>
+                              <div className="bg-slate-700/50 rounded-lg p-4">
+                                <p className="text-slate-300 whitespace-pre-wrap">{inquiry.message}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant={inquiry.status === 'responded' ? 'outline' : 'primary'}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleUpdateStatus(inquiry.id, 'responded')
+                                }}
+                                disabled={inquiry.status === 'responded'}
+                              >
+                                {inquiry.status === 'responded' ? 'Responded' : 'Mark Responded'}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant={inquiry.status === 'closed' ? 'outline' : 'ghost'}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleUpdateStatus(inquiry.id, 'closed')
+                                }}
+                                disabled={inquiry.status === 'closed'}
+                              >
+                                {inquiry.status === 'closed' ? 'Closed' : 'Close'}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  window.open(`mailto:${inquiry.email}?subject=Re: ${inquiry.subject}`)
+                                }}
+                              >
+                                <Mail className="w-4 h-4 mr-2" />
+                                Reply via Email
+                              </Button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setShowDeleteDialog(inquiry.id)
+                                }}
+                                className="ml-auto p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Card>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
 
         {/* Delete Confirmation Dialog */}
         {showDeleteDialog && (
