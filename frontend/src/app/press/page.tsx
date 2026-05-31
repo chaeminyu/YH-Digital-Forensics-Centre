@@ -213,20 +213,18 @@ const PressPage: React.FC = () => {
                     >
                       <div className="flex flex-col lg:flex-row">
                         {/* Thumbnail Image */}
-                        <div className="flex-shrink-0 lg:w-48 lg:-ml-2">
-                          <div className="relative w-full h-48 lg:h-full bg-slate-800/50">
-                            {release.thumbnail_url ? (
-                              <img
-                                src={release.thumbnail_url}
-                                alt={release.title}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex items-center justify-center w-full h-full bg-accent-400/20 text-accent-400">
-                                <Newspaper className="w-8 h-8" />
-                              </div>
-                            )}
-                          </div>
+                        <div className="flex-shrink-0 lg:w-72 lg:self-center p-6 pb-0 lg:p-6 lg:pr-0">
+                          {release.thumbnail_url ? (
+                            <img
+                              src={release.thumbnail_url}
+                              alt={release.title}
+                              className="w-full h-auto rounded-lg bg-slate-800/50"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center w-full aspect-video bg-accent-400/20 text-accent-400 rounded-lg">
+                              <Newspaper className="w-8 h-8" />
+                            </div>
+                          )}
                         </div>
 
                         {/* Content */}
