@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SITE_URL } from './site'
 
 // Function to fetch site settings
 export async function fetchSiteSettings() {
@@ -28,7 +29,7 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
   const settings = await fetchSiteSettings()
   
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://yhdfc.com'),
+    metadataBase: new URL(SITE_URL),
     title: {
       template: '%s | YH Digital Forensic Center',
       default: settings.default_meta_title || 'YH Digital Forensic Center - Digital Forensics & Cybersecurity Experts in Korea'
@@ -51,7 +52,7 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
       'legal forensics',
       'incident response'
     ],
-    authors: [{ name: 'YH Digital Forensic Center', url: process.env.NEXT_PUBLIC_SITE_URL }],
+    authors: [{ name: 'YH Digital Forensic Center', url: SITE_URL }],
     creator: 'YH Digital Forensic Center',
     publisher: 'YH Digital Forensic Center',
     formatDetection: {
@@ -73,7 +74,7 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: process.env.NEXT_PUBLIC_SITE_URL,
+      url: SITE_URL,
       title: settings.default_meta_title || 'YH Digital Forensic Center - Digital Forensics & Cybersecurity Experts in Korea',
       description: settings.default_meta_description || 'Leading digital forensics experts in Korea providing professional investigation services for legal and corporate clients.',
       siteName: 'YH Digital Forensic Center',
@@ -94,14 +95,10 @@ export async function generateDynamicMetadata(): Promise<Metadata> {
       creator: '@yhdfc',
       site: '@yhdfc',
     },
-    verification: {
-      google: 'your-google-verification-code',
-      yandex: 'your-yandex-verification-code',
-      yahoo: 'your-yahoo-verification-code',
-    },
-    alternates: {
-      canonical: process.env.NEXT_PUBLIC_SITE_URL,
-    },
+    // NOTE: no site-wide `alternates.canonical` here. Root metadata is
+    // inherited by every route, so a canonical set at this level declared each
+    // page a duplicate of the homepage. Per-page canonicals belong in each
+    // route's own layout.tsx.
     icons: {
       icon: '/images/logo.png',
       shortcut: '/images/logo.png',

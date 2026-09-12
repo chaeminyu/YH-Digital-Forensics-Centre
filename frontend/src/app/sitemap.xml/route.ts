@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { SITE_URL } from '@/lib/site'
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yhdfc.com'
+  const baseUrl = SITE_URL
   const currentDate = new Date().toISOString()
 
   const staticPages = [
